@@ -45,7 +45,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^3.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -88,15 +88,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
-fonts:
-  - family: Asap
-    fonts:
-      - asset: fonts/Asap-Regular.ttf
-      - asset: fonts/Asap-Bold.ttf
-        weight: 700
-      - asset: fonts/Asap-Italic.ttf
-        style: italic
-      - asset: fonts/Asap-BoldItalic.ttf
-        weight: 700
-        style: italic
+  fonts:
+    - family: Asap
+      fonts:
+        - asset: fonts/Asap-Regular.ttf
+        - asset: fonts/Asap-Bold.ttf
+          weight: 700
+        - asset: fonts/Asap-Italic.ttf
+          style: italic
+        - asset: fonts/Asap-BoldItalic.ttf
+          weight: 700
+          style: italic
