@@ -88,3 +88,15 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+fonts:
+  - family: Asap
+    fonts:
+      - asset: fonts/Asap-Regular.ttf
+      - asset: fonts/Asap-Bold.ttf
+        weight: 700
+      - asset: fonts/Asap-Italic.ttf
+        style: italic
+      - asset: fonts/Asap-BoldItalic.ttf
+        weight: 700
+        style: italic
