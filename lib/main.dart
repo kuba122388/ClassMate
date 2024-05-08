@@ -1,6 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'consts/Colors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,52 +8,78 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Widget buildContainer(String text, BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(15),
-      width: screenWidth * 0.55,
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(49, 62, 80, 1.0),
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Asap',
-          fontSize: 18,
-          letterSpacing: 0.5,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+        home: MyHome(),
+      debugShowCheckedModeBanner: false,
     );
   }
+}
+
+class MyHome extends StatelessWidget {
+  const MyHome({super.key});
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Color.fromRGBO(71, 82, 98, 1.0),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              buildContainer('LOGOWANIE', context),
-              SizedBox(height: screenHeight * 0.05),
-              buildContainer('REJESTRACJA', context)
-            ],
+    return Scaffold(
+          backgroundColor: COLOR_BACKGROUND,
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(
+                    top: screenHeight*0.2,
+                    bottom: screenHeight*0.05,
+                  ),
+                  child: Image.asset(
+                    './images/logo.png',
+                    width: screenWidth*0.8,
+                  ),
+                ),
+
+                BuildNavButton('LOGOWANIE', context),
+                SizedBox(height: screenHeight * 0.05),
+                BuildNavButton('REJESTRACJA', context),
+              ],
+            ),
+          )
+      );
+  }
+
+  Widget BuildNavButton(String text, BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return ElevatedButton(
+        onPressed: () {},
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
+        ),
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(15),
+          width: screenWidth * 0.55,
+          decoration: BoxDecoration(
+            color: COLOR_BUTTON,
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontFamily: 'Asap',
+              fontSize: 18,
+              letterSpacing: 0.5,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         )
-      ),
     );
   }
 }
