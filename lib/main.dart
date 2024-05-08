@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'consts/Colors.dart';
+import 'register-page/register-page.dart';
+import 'login-page/login-page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,6 +15,23 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
         home: MyHome(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+void _navigateTo(BuildContext context, String text) {
+
+  if(text == 'LOGOWANIE') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
+  if(text=='REJESTRACJA') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
     );
   }
 }
@@ -55,7 +74,9 @@ class MyHome extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          _navigateTo(context, text);
+        },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
           padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
