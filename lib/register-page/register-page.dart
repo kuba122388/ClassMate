@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ekran Logowania'),
+        title: Text('Ekran Rejestracji'),
       ),
       body: Center(
-        child: Text('To jest ekran logowania'),
+        child: Text('To jest ekran rejestracji'),
       ),
     );
   }
