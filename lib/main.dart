@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'consts/Colors.dart';
+import 'consts/consts.dart';
 import 'register-page/register-page.dart';
 import 'login-page/login-page.dart';
 
@@ -87,7 +87,7 @@ class MyHome extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           width: screenWidth * 0.55,
           decoration: BoxDecoration(
-            color: COLOR_BUTTON,
+            color: COLOR_BACKGROUND_DARKER,
             borderRadius: BorderRadius.circular(40),
           ),
           child: Text(
