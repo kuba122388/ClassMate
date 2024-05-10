@@ -64,7 +64,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   assets:
-    - images/logo.png
+    - images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -91,6 +91,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
   fonts:
     - family: Asap
       fonts:
@@ -102,3 +103,9 @@ flutter:
         - asset: fonts/Asap-BoldItalic.ttf
           weight: 700
           style: italic
+    - family: Architects Daughter
+      fonts:
+        - asset: fonts/ArchitectsDaughter.ttf
+    - family: Croissant One
+      fonts:
+        - asset: fonts/CroissantOne.ttf
