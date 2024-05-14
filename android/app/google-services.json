@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1016480461147",
+    "firebase_url": "https://classmate-78f10-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "classmate-78f10",
+    "storage_bucket": "classmate-78f10.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016480461147:android:af36f88bd8cf41e31f2a7e",
+        "android_client_info": {
+          "package_name": "com.example.classmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCod35j9tI-XVlnCkOyU0XmmDjRhrEj5NI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
