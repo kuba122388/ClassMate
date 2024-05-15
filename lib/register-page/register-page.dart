@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
@@ -91,21 +92,47 @@ class _RegisterPageState extends State<RegisterPage> {
                   Container(
                     margin: const EdgeInsets.only(top: 30, bottom: 40),
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Processing Data"),
-                          ));
-                          Map<String, String> students = {
-                            'Imię': _imieController.text,
-                            'Nazwisko': _nazwiskoController.text,
-                            'E-mail': _emailController.text,
-                            'Data urodzenia': _dataUrodzeniaController.text,
-                            'Uczelnia': _uczelniaController.text,
-                            'Hasło': _hasloController.text,
-                          };
-                          dbRef.push().set(students);
+                          try {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Przetwarzanie danych"),
+                                ));
+                            UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                                email: _emailController.text,
+                                password: _hasloController.text
+                            );
+
+                            User? user = userCredential.user;
+
+                            Map<String, String> students = {
+                              'Imię': _imieController.text,
+                              'Nazwisko': _nazwiskoController.text,
+                              'E-mail': _emailController.text,
+                              'Data urodzenia': _dataUrodzeniaController.text,
+                              'Uczelnia': _uczelniaController.text,
+                            };
+                            //FirebaseFirestore.instance.collection('users').doc
+                            dbRef.push().set(students);
+
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'weak-password') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Wprowadzone hasło jest za słabe"),
+                                  ));
+                            } else if (e.code == 'email-already-in-use') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Ten adres E-mail już istnieje"),
+                                  ));
+                            }
+                            else{
+                              print('UNKNOWN ERROR: ${e.code}');
+                            }
+                          }
+
                         }
                       },
                       style: ElevatedButton.styleFrom(
