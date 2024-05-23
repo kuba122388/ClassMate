@@ -19,8 +19,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-        home: MyHome(),
+    return MaterialApp(
+      routes: {
+          '/home': (context) => const MyHome(),
+          '/login': (context) => const LoginPage(),
+          '/registerpage' : (context) => const RegisterPage()
+        },
+        home: const MyHome(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -31,14 +36,14 @@ void _navigateTo(BuildContext context, String text) {
   if(text == 'LOGOWANIE') {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
   if(text=='REJESTRACJA') {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => const RegisterPage()),
     );
   }
 }
@@ -85,8 +90,8 @@ class MyHome extends StatelessWidget {
           _navigateTo(context, text);
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
-          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
+          backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
         ),
         child: Container(
