@@ -1,8 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
-import '../database-features/DatabaseFeatures.dart';
 import '../login-page/login-page.dart';
 
 class RegisterApproved extends StatefulWidget {
@@ -94,7 +91,7 @@ class _RegisterApprovedState extends State<RegisterApproved> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
               },
               icon: Image.asset('././images/back_icon.png',
                   height: screenHeight * 0.06),
@@ -116,8 +113,8 @@ class _RegisterApprovedState extends State<RegisterApproved> {
           );
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
-          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
+          backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
         ),
         child: Container(
