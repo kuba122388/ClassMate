@@ -1,20 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
+import '../database-features/DatabaseFeatures.dart';
 import 'schedule-page.dart';
 import 'sales-page.dart';
 import 'announcements-page.dart';
 import 'settings-page.dart';
 
 class MainUserPage extends StatefulWidget {
-  const MainUserPage({super.key});
+  final String email;
+  const MainUserPage({super.key, required this.email});
 
   @override
   State<MainUserPage> createState() => _MainUserPageState();
 }
 
 class _MainUserPageState extends State<MainUserPage> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
 
+  Future<void> _fetchUserData() async {
+    DatabaseUser? retrievedUser;
+    String email = widget.email;
+    DatabaseUser? user = await getUserData(email);
+    setState(() {
+      retrievedUser = user;
+    });
+    if (retrievedUser != null) {
+         print('Pobrano dane użytkownika: ${retrievedUser?.firstName} ${retrievedUser?.lastName}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +51,9 @@ class _MainUserPageState extends State<MainUserPage> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.only(top: 15.0),
-            child: Image.asset('././images/logo.png'),
+            padding: const EdgeInsets.only(top: 15.0),
             width: screenWidth*0.6,
+            child: Image.asset('././images/logo.png'),
           ),
           const Divider(
             color: Colors.white, // Kolor biały
