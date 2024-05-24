@@ -26,6 +26,17 @@ if (flutterVersionName == null) {
 }
 
 android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.yourcompany.yourapp"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+
     namespace "com.example.classmate"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -68,5 +79,5 @@ flutter {
 }
 
 dependencies {
-
+    implementation "androidx.multidex:multidex:2.0.1"
 }
