@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'consts/consts.dart';
 import 'register-page/register-page.dart';
 import 'login-page/login-page.dart';
+import '../user-page/main_userpage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
       routes: {
           '/home': (context) => const MyHome(),
           '/login': (context) => const LoginPage(),
-          '/registerpage' : (context) => const RegisterPage()
+          '/registerpage' : (context) => const RegisterPage(),
+          '/usermainpage' : (context) => const MainUserPage(),
         },
         home: const MyHome(),
       debugShowCheckedModeBanner: false,
