@@ -32,7 +32,7 @@ class DatabaseUser {
       firstName: map['firstName'],
       lastName: map['lastName'],
       email: map['email'],
-      dateOfBirth: map['dateOfBirth'],
+      dateOfBirth: DateTime.parse(map['dateOfBirth']),
       university: map['university'],
     );
   }
