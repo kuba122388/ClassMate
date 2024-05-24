@@ -22,12 +22,46 @@ class _SalesPageState extends State<SalesPage> {
         bottomNavigationBar: BuildBackButton(context));
   }
 
+
+
+
+
+
   Center BuildBody(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeigh = MediaQuery.of(context).size.height;
+    double imageSpacing = screenHeigh * 0.05;
 
     return Center(
-
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: screenWidth * 0.9,
+            margin: EdgeInsets.only( top: imageSpacing),
+            child: Image.asset(
+              './images/Sales_MaxBurger.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+          Container(
+            width: screenWidth * 0.9,
+            margin: EdgeInsets.only( top: imageSpacing),
+            child: Image.asset(
+              './images/Sales_Python.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+          Container(
+            width: screenWidth * 0.9,
+            margin: EdgeInsets.only( top: imageSpacing),
+            child: Image.asset(
+              './images/Sales_Indeks.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -50,7 +84,7 @@ class _SalesPageState extends State<SalesPage> {
                 blurRadius: 4.0,
               )
             ]),
-        child: Center(
+        child: const Center(
           child: Text(
             'Promocje',
             textAlign: TextAlign.center,
