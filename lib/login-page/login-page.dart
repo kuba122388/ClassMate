@@ -66,9 +66,8 @@ class _LoginPageState extends State<LoginPage> {
                             textAlign: TextAlign.center),
                       ));
                       Future.delayed(
-                        const Duration(seconds: 2), () => Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => const LoginPage()),
-                      ),);
+                        const Duration(seconds: 2), () => Navigator.pushReplacementNamed(context, '/usermainpage'),
+                      );
 
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'invalid-credential') {
