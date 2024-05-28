@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
 import '../database-features/DatabaseFeatures.dart';
@@ -5,9 +6,11 @@ import 'schedule-page.dart';
 import 'sales-page.dart';
 import 'announcements-page.dart';
 import 'settings-page.dart';
+import '../database-features/Task.dart';
 
 class MainUserPage extends StatefulWidget {
   final String email;
+
   const MainUserPage({super.key, required this.email});
 
   @override
@@ -29,7 +32,8 @@ class _MainUserPageState extends State<MainUserPage> {
       retrievedUser = user;
     });
     if (retrievedUser != null) {
-         print('Pobrano dane użytkownika: ${retrievedUser?.firstName} ${retrievedUser?.lastName}');
+      print(
+          'Pobrano dane użytkownika: ${retrievedUser?.firstName} ${retrievedUser?.lastName}');
     }
   }
 
@@ -46,13 +50,14 @@ class _MainUserPageState extends State<MainUserPage> {
   Center BuildBody(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final taskController = TextEditingController();
 
     return Center(
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.only(top: 15.0),
-            width: screenWidth*0.6,
+            width: screenWidth * 0.6,
             child: Image.asset('././images/logo.png'),
           ),
           const Divider(
@@ -62,7 +67,7 @@ class _MainUserPageState extends State<MainUserPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              SizedBox(width: screenWidth*0.14),
+              SizedBox(width: screenWidth * 0.14),
               const Text(
                 'TO DO:',
                 textAlign: TextAlign.center,
@@ -74,22 +79,30 @@ class _MainUserPageState extends State<MainUserPage> {
               ),
               IconButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _showAddTaskDialog(taskController);
                 },
                 icon: Image.asset(
                   '././images/plus.png',
                   height: screenHeight * 0.06,
-                  width: screenWidth * 0.06, 
+                  width: screenWidth * 0.06,
                 ),
               ),
             ],
           ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: screenWidth * 0.8,
+                height: screenHeight * 0.42,
+                child: TaskList(userEmail: widget.email),
+              )
+            ],
+          )
         ],
       ),
     );
   }
-
-
 
   PreferredSizeWidget BuildTopNav(BuildContext context) {
     return PreferredSize(
@@ -112,43 +125,38 @@ class _MainUserPageState extends State<MainUserPage> {
         child: Row(
           children: [
             Container(
-              width: MediaQuery.of(context).size.width/2,
+              width: MediaQuery.of(context).size.width / 2,
               // padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: const Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Text(
-                      '16.05.2024',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      )
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text('16.05.2024',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Text('Czwartek',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ],
               ),
-              Expanded(
-                child: Text(
-                    'Czwartek',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    )
-                ),
-              ),
-            ],
-        ),
               // alignment: Alignment.centerLeft,
-
             ),
             Container(
-              width: MediaQuery.of(context).size.width/2,
-              padding: const EdgeInsets.only(top: 3, bottom: 3, right:40),
+              width: MediaQuery.of(context).size.width / 2,
+              padding: const EdgeInsets.only(top: 3, bottom: 3, right: 40),
               alignment: Alignment.centerRight,
               child: IconButton(
                 onPressed: () {
@@ -158,12 +166,11 @@ class _MainUserPageState extends State<MainUserPage> {
                   );
                 },
                 icon: Image.asset('././images/settings.png'),
-            ),
+              ),
             ),
           ],
         ),
       ),
-
     );
   }
 
@@ -182,8 +189,7 @@ class _MainUserPageState extends State<MainUserPage> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
+                Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ShedulePage()));
               },
               icon: Image.asset('././images/calendar.png',
@@ -193,15 +199,15 @@ class _MainUserPageState extends State<MainUserPage> {
               onPressed: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AnnouncementsPage()));
+                    MaterialPageRoute(
+                        builder: (context) => AnnouncementsPage()));
               },
               icon: Image.asset('././images/announcements.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
+                Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SalesPage()));
               },
               icon: Image.asset('././images/sale.png',
@@ -211,5 +217,70 @@ class _MainUserPageState extends State<MainUserPage> {
         ),
       ),
     );
+  }
+
+  void _showAddTaskDialog(taskController) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: COLOR_BACKGROUND_DARKER,
+            titleTextStyle: const TextStyle(
+                color: Colors.white, fontSize: 24, fontFamily: 'Asap'),
+            title: const Text('Dodaj task', textAlign: TextAlign.center),
+            content: Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: const BoxDecoration(
+                  color: COLOR_INPUT_FIELDS,
+                  borderRadius: BorderRadius.all(BORDER_RADIUS_INPUTS),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(0, 0.0),
+                      blurRadius: 3.0,
+                    )
+                  ]),
+              child: TextFormField(
+                controller: taskController,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                    hintText: 'Tutaj wpisz swoje zadanie',
+                    hintStyle: TextStyle(
+                        fontFamily: 'Asap', fontStyle: FontStyle.italic),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    border: InputBorder.none),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Asap',
+                ),
+              ),
+            ),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: COLOR_BACKGROUND,
+                    foregroundColor: Colors.white,
+                    elevation: 10,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 50),
+                  ),
+                  onPressed: () async {
+                    if (taskController.text.isNotEmpty) {
+                      Task newTask = Task(task: taskController.text, timestamp: Timestamp.now());
+                      await newTask.saveTask(widget.email);
+                      taskController.clear();
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Zapisz'),
+                ),
+              ),
+            ],
+          );
+        });
   }
 }
