@@ -24,8 +24,6 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: COLOR_BACKGROUND,
@@ -46,23 +44,55 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                 var announcement = snapshot.data![index];
                 var timestamp = announcement['date'] as Timestamp;
                 var date = timestamp.toDate();
-                var formattedDate = '${date.year}-${date.month}-${date.day}';
-                return Card(
-                  child: ListTile(
-                    leading: FutureBuilder<String>(
-                      future: _getImageUrl(announcement['imageLink']),
-                      builder: (context, imageSnapshot) {
-                        if (imageSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (imageSnapshot.hasError) {
-                          return const Icon(Icons.error);
-                        } else {
-                          return Image.network(imageSnapshot.data!);
-                        }
-                      },
-                    ),
-                    title: Text('Event Date: $formattedDate'),
+                var formattedDate = '${date.day}-${date.month}-${date.year}';
+                var weekdayIndex = date.weekday;
+
+                Map<int, String> dayNames = {
+                  1: 'Poniedziałek',
+                  2: 'Wtorek',
+                  3: 'Środa',
+                  4: 'Czwartek',
+                  5: 'Piątek',
+                  6: 'Sobota',
+                  7: 'Niedziela',
+                };
+
+                var dayOfWeek = dayNames[weekdayIndex];
+
+
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$dayOfWeek, $formattedDate',
+                        style: const TextStyle(
+                          fontFamily: 'Croissant One',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // Kolor tekstu
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      FutureBuilder<String>(
+                        future: _getImageUrl(announcement['imageLink']),
+                        builder: (context, imageSnapshot) {
+                          if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (imageSnapshot.hasError) {
+                            return const Center(child: Icon(Icons.error));
+                          } else {
+                            return Image.network(imageSnapshot.data!);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
@@ -138,8 +168,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: Image.asset('././images/back_icon.png',
-                  height: screenHeight * 0.06),
+              icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
             ),
           ],
         ),
