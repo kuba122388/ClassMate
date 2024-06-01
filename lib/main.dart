@@ -90,8 +90,8 @@ class MyHome extends StatelessWidget {
           _navigateTo(context, text);
         },
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
-          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
           tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
         ),
         child: Container(
