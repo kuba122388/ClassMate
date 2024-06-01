@@ -1,6 +1,10 @@
+import 'package:classmate/user-page/sales-page-end.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
+import '../login-page/login-page.dart';
 
 class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
@@ -10,7 +14,16 @@ class SalesPage extends StatefulWidget {
 }
 
 class _SalesPageState extends State<SalesPage> {
+  Future<List<Map<String, dynamic>>> fetchSales() async {
+    List<Map<String, dynamic>> sales = [];
+    var collection = FirebaseFirestore.instance.collection('sales');
 
+    var snapshot = await collection.get();
+    for (var doc in snapshot.docs) {
+      sales.add(doc.data());
+    }
+    return sales;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +31,69 @@ class _SalesPageState extends State<SalesPage> {
         resizeToAvoidBottomInset: false,
         backgroundColor: COLOR_BACKGROUND,
         appBar: BuildTopNav(context),
-        body: BuildBody(context),
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchSales(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No announcements found'));
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  var sales = snapshot.data![index];
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        FutureBuilder<String>(
+                          future: _getImageUrl(sales['image']),
+                          builder: (context, imageSnapshot) {
+                            if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (imageSnapshot.hasError) {
+                              return const Center(child: Icon(Icons.error));
+                            } else if (imageSnapshot.hasData && imageSnapshot.data != null) {
+                              String img = imageSnapshot.data!;
+                              String code = sales['code'];
+                              String txt = sales['text'];
+                              String description = sales['description'];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => SalesPageEnd(imag: img, code: code, txt: txt, description: description)),
+                                  );
+                                },
+                                child: Image.network(img),
+                              );
+                            } else {
+                              return const Center(child: Text('Brak danych'));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
         bottomNavigationBar: BuildBackButton(context));
   }
-
-
-
-
-
 
   Center BuildBody(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -38,7 +106,7 @@ class _SalesPageState extends State<SalesPage> {
         children: [
           Container(
             width: screenWidth * 0.9,
-            margin: EdgeInsets.only( top: imageSpacing),
+            margin: EdgeInsets.only(top: imageSpacing),
             child: Image.asset(
               './images/Sales_MaxBurger.png',
               fit: BoxFit.contain,
@@ -46,7 +114,7 @@ class _SalesPageState extends State<SalesPage> {
           ),
           Container(
             width: screenWidth * 0.9,
-            margin: EdgeInsets.only( top: imageSpacing),
+            margin: EdgeInsets.only(top: imageSpacing),
             child: Image.asset(
               './images/Sales_Python.png',
               fit: BoxFit.contain,
@@ -54,7 +122,7 @@ class _SalesPageState extends State<SalesPage> {
           ),
           Container(
             width: screenWidth * 0.9,
-            margin: EdgeInsets.only( top: imageSpacing),
+            margin: EdgeInsets.only(top: imageSpacing),
             child: Image.asset(
               './images/Sales_Indeks.png',
               fit: BoxFit.contain,
@@ -65,7 +133,17 @@ class _SalesPageState extends State<SalesPage> {
     );
   }
 
-
+  Future<String> _getImageUrl(String? imageUrl) async {
+    if (imageUrl != null) {
+      final ref = FirebaseStorage.instance.ref().child('sales').child(imageUrl);
+      var url = await ref.getDownloadURL();
+      print('TTUAJ JEST LINK!: $url');
+      return url;
+    } else {
+      print('Nie działa');
+      return ''; // Zwracamy pusty ciąg, jeśli nie ma linku obrazu
+    }
+  }
 
   PreferredSizeWidget BuildTopNav(BuildContext context) {
     return PreferredSize(
@@ -124,6 +202,5 @@ class _SalesPageState extends State<SalesPage> {
         ),
       ),
     );
-
   }
 }
