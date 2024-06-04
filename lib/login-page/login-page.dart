@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
 import '../user-page/main_userpage.dart';
+import '../admin-page/main_admin_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -66,11 +67,20 @@ class _LoginPageState extends State<LoginPage> {
                         content: Text("Zalogowano",
                             textAlign: TextAlign.center),
                       ));
-                      Future.delayed(
-                        const Duration(seconds: 2), () => Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => MainUserPage(email: _emailController.text)),
-                      ),
-                      );
+                      if(_emailController.text == 'admin@classmate.com'){
+                        Future.delayed(
+                          const Duration(seconds: 2), () => Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => MainAdminPage(email: _emailController.text)),
+                        ),
+                        );
+                      }
+                      else{
+                        Future.delayed(
+                          const Duration(seconds: 2), () => Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => MainUserPage(email: _emailController.text)),
+                        ),
+                        );
+                      }
 
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'invalid-credential') {
