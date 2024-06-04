@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
 import '../database-features/DatabaseFeatures.dart';
-import 'schedule-page.dart';
 import 'sales-page.dart';
 import 'announcements-page.dart';
 import 'settings-page.dart';
+import 'users-page.dart';
 
 class MainAdminPage extends StatefulWidget {
   final String email;
@@ -161,9 +161,9 @@ class _MainAdminPageState extends State<MainAdminPage> {
               onPressed: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ShedulePage()));
+                    MaterialPageRoute(builder: (context) => UsersPage()));
               },
-              icon: Image.asset('././images/calendar.png',
+              icon: Image.asset('././images/user.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
