@@ -1,10 +1,10 @@
+import 'user-detail-page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import '../consts/consts.dart';
 
 class UsersPage extends StatefulWidget {
-  const UsersPage({super.key});
+  const UsersPage({Key? key}) : super(key: key);
 
   @override
   State<UsersPage> createState() => _UsersPageState();
@@ -12,27 +12,34 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<String> _userEmails = [];
+  late List<String> userEmails = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchUserEmails();
+    _updateUserList();
   }
 
-  Future<void> _fetchUserEmails() async {
+  Future<List<String>> _fetchUserEmails() async {
     try {
       QuerySnapshot snapshot = await _firestore.collection('users').get();
-      List<String> emails = snapshot.docs
+      return snapshot.docs
           .map((doc) => doc['email'].toString())
           .where((email) => email != 'admin@classmate.com')
           .toList();
-      setState(() {
-        _userEmails = emails;
-      });
     } catch (e) {
       print("Error fetching user emails: $e");
+      return [];
     }
+  }
+
+  void _updateUserList() async {
+    setState(() {}); // Refresh state
+    // Retrieve the user list again
+    List<String> newUserEmails = await _fetchUserEmails();
+    setState(() {
+      userEmails = newUserEmails;
+    });
   }
 
   @override
@@ -40,38 +47,53 @@ class _UsersPageState extends State<UsersPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: COLOR_BACKGROUND,
-      appBar: BuildTopNav(context),
-      body: BuildBody(context),
-      bottomNavigationBar: BuildBackButton(context),
+      appBar: _buildTopNav(context),
+      body: _buildBody(context),
+      bottomNavigationBar: _buildBackButton(context),
     );
   }
 
-  Widget BuildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Center(
-      child: _userEmails.isEmpty
-          ? CircularProgressIndicator()
-          : ListView.builder(
-        padding: EdgeInsets.only(top: 50.0), // Większy odstęp od góry
-        itemCount: _userEmails.length,
+      child: ListView.builder(
+        padding: EdgeInsets.only(top: 50.0),
+        itemCount: userEmails.length,
         itemBuilder: (context, index) {
-          return Center(
-            child: Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0), // Ustaw radius 20
-              ),
-              margin: EdgeInsets.symmetric(vertical: 10.0),
-              child: Container(
-                width: screenWidth * 0.8, // Ustaw szerokość karty
-                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0), // Zmniejsz wysokość prostokątów
-                child: Center( // Wyśrodkuj tekst w karcie
-                  child: Text(
-                    _userEmails[index],
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Color(0xFF313E50), // Ustaw kolor tekstu
+          return GestureDetector(
+            onTap: () async {
+              bool? isDeleted = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserDetailPage(
+                    email: userEmails[index],
+                    updateUserList: _updateUserList, // Passing the method to update the list
+                  ),
+                ),
+              );
+
+              if (isDeleted == true) {
+                _updateUserList(); // Update the list upon return
+              }
+            },
+            child: Center(
+              child: Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                margin: EdgeInsets.symmetric(vertical: 10.0),
+                child: Container(
+                  width: screenWidth * 0.8,
+                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  child: Center(
+                    child: Text(
+                      userEmails[index],
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        color: Color(0xFF313E50),
+                      ),
                     ),
                   ),
                 ),
@@ -83,16 +105,14 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  PreferredSizeWidget BuildTopNav(BuildContext context) {
+  PreferredSizeWidget _buildTopNav(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
         padding: const EdgeInsets.only(top: 10, bottom: 10),
         decoration: const BoxDecoration(
           color: COLOR_BACKGROUND_DARKER,
-          borderRadius: BorderRadius.vertical(
-            bottom: BORDER_RADIUS,
-          ),
+          borderRadius: BorderRadius.vertical(bottom: BORDER_RADIUS),
           boxShadow: [
             BoxShadow(
               color: Colors.white,
@@ -103,7 +123,7 @@ class _UsersPageState extends State<UsersPage> {
         ),
         child: Center(
           child: Text(
-            'UZYTKOWINCY',
+            'UZYTKOWNICY',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -117,7 +137,7 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  BottomAppBar BuildBackButton(BuildContext context) {
+  Widget _buildBackButton(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return BottomAppBar(
@@ -135,7 +155,8 @@ class _UsersPageState extends State<UsersPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: Image.asset('././images/back_icon.png',
+              icon: Image.asset(
+                '././images/back_icon.png',
                 height: screenHeight * 0.06,
               ),
             ),
