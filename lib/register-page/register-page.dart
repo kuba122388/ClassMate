@@ -161,7 +161,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                   .showSnackBar(const SnackBar(
                                 content: Text("Ten adres E-mail już istnieje"),
                               ));
-                            } else {
+                            }
+                            else if(e.code == 'invalid-email'){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Format E-mail jest nieprawidłowy"),
+                              ));
+                            }
+                            else {
                               print('UNKNOWN ERROR: ${e.code}');
                             }
                           }
