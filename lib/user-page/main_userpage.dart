@@ -190,7 +190,7 @@ class _MainUserPageState extends State<MainUserPage> {
             IconButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ShedulePage()));
+                    MaterialPageRoute(builder: (context) => SchedulePage()));
               },
               icon: Image.asset('././images/calendar.png',
                   height: screenHeight * 0.06),
