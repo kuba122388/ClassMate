@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
 import '../consts/consts.dart';
 
 class AnnouncementsPage extends StatefulWidget {
@@ -11,13 +13,17 @@ class AnnouncementsPage extends StatefulWidget {
 }
 
 class _AnnouncementsPageState extends State<AnnouncementsPage> {
+  bool deleteOption = false;
+
   Future<List<Map<String, dynamic>>> fetchAnnouncements() async {
     List<Map<String, dynamic>> announcements = [];
     var collection = FirebaseFirestore.instance.collection('announcements');
 
     var snapshot = await collection.get();
     for (var doc in snapshot.docs) {
-      announcements.add(doc.data());
+      Map<String, dynamic> temp = doc.data();
+      temp.addAll({'ID': doc.id});
+      announcements.add(temp);
     }
     return announcements;
   }
@@ -28,77 +34,240 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: COLOR_BACKGROUND,
       appBar: BuildTopNav(context),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchAnnouncements(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No announcements found'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                var announcement = snapshot.data![index];
-                var timestamp = announcement['date'] as Timestamp;
-                var date = timestamp.toDate();
-                var formattedDate = '${date.day}-${date.month}-${date.year}';
-                var weekdayIndex = date.weekday;
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchAnnouncements(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                          child: Text(
+                            'Brak dodanych ogłoszeń',
+                            style: TextStyle(color: Colors.white, fontSize: 24, fontFamily: 'Asap'),
+                          ));
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          var announcement = snapshot.data![index];
+                          var timestamp = announcement['date'] as Timestamp;
+                          var date = timestamp.toDate();
+                          var formattedDate = '${date.day}-${date.month}-${date.year}';
+                          var weekdayIndex = date.weekday;
 
-                Map<int, String> dayNames = {
-                  1: 'Poniedziałek',
-                  2: 'Wtorek',
-                  3: 'Środa',
-                  4: 'Czwartek',
-                  5: 'Piątek',
-                  6: 'Sobota',
-                  7: 'Niedziela',
-                };
+                          Map<int, String> dayNames = {
+                            1: 'Poniedziałek',
+                            2: 'Wtorek',
+                            3: 'Środa',
+                            4: 'Czwartek',
+                            5: 'Piątek',
+                            6: 'Sobota',
+                            7: 'Niedziela',
+                          };
 
-                var dayOfWeek = dayNames[weekdayIndex];
+                          var dayOfWeek = dayNames[weekdayIndex];
 
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '$dayOfWeek, $formattedDate',
+                                  style: const TextStyle(
+                                    fontFamily: 'Croissant One',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white, // Kolor tekstu
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                                FutureBuilder<String>(
+                                  future: _getImageUrl(announcement['imageLink']),
+                                  builder: (context, imageSnapshot) {
+                                    if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                                      return const Center(child: CircularProgressIndicator());
+                                    } else if (imageSnapshot.hasError) {
+                                      return const Center(child: Icon(Icons.error));
+                                    } else {
+                                      return Container(
+                                        child: Stack(
+                                          children: [
+                                            ColorFiltered(
+                                              colorFilter: deleteOption
+                                                  ? ColorFilter.mode(
+                                                COLOR_BACKGROUND_DARKER.withOpacity(0.4),
+                                                BlendMode.dstATop,
+                                              )
+                                                  : ColorFilter.mode(
+                                                Colors.transparent.withOpacity(0),
+                                                BlendMode.darken,
+                                              ),
+                                              child: Image.network(imageSnapshot.data!),
+                                            ),
+                                            Visibility(
+                                              visible: deleteOption,
+                                              child: Positioned.fill(
+                                                child: Center(
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      try {
+                                                        await FirebaseFirestore.instance
+                                                            .collection('announcements')
+                                                            .doc(announcement['ID'])
+                                                            .delete();
 
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$dayOfWeek, $formattedDate',
-                        style: const TextStyle(
-                          fontFamily: 'Croissant One',
-                          fontSize: 20,
+                                                        setState(() {
+                                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                            duration: Duration(milliseconds: 1500),
+                                                            behavior: SnackBarBehavior.floating,
+                                                            content: Text("Ogłoszenie zostało pomyślnie usunięte!",
+                                                                textAlign: TextAlign.center),
+                                                          ));
+                                                        });
+                                                      } catch (e) {
+                                                        setState(() {});
+                                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                          duration: Duration(milliseconds: 1500),
+                                                          behavior: SnackBarBehavior.floating,
+                                                          content: Text("Wystąpił problem z usunięciem ogłoszenia",
+                                                              textAlign: TextAlign.center),
+                                                        ));
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                                      backgroundColor: COLOR_BACKGROUND_DARKER,
+                                                    ),
+                                                    child: const Text(
+                                                      'USUN',
+                                                      style: TextStyle(
+                                                        fontSize: 24,
+                                                        fontFamily: 'Asap',
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          Visibility(
+              visible: deleteOption ? false : true,
+              child: Positioned(
+                left: 24.0,
+                bottom: 16.0,
+                child: Material(
+                  elevation: 20,
+                  shadowColor: Colors.black,
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.7),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                        backgroundColor: COLOR_BACKGROUND_DARKER,
+                      ),
+                      child: const Text(
+                        'DODAJ',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontFamily: 'Asap',
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, // Kolor tekstu
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      FutureBuilder<String>(
-                        future: _getImageUrl(announcement['imageLink']),
-                        builder: (context, imageSnapshot) {
-                          if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (imageSnapshot.hasError) {
-                            return const Center(child: Icon(Icons.error));
-                          } else {
-                            return Image.network(imageSnapshot.data!);
-                          }
-                        },
-                      ),
-                    ],
+                    ),
                   ),
-                );
-              },
-            );
-          }
-        },
+                ),
+              )),
+          Visibility(
+              visible: deleteOption ? false : true,
+              child: Positioned(
+                right: 24.0,
+                bottom: 16.0,
+                child: Material(
+                  elevation: 20,
+                  shadowColor: Colors.black,
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.7),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+    ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          deleteOption = !deleteOption;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                        backgroundColor: COLOR_BACKGROUND_DARKER,
+                      ),
+                      child: const Text(
+                        'USUN',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontFamily: 'Asap',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ))
+        ],
       ),
       bottomNavigationBar: BuildBackButton(context),
     );
@@ -166,7 +335,13 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                if (deleteOption == false) {
+                  Navigator.of(context).pop();
+                  return;
+                }
+                setState(() {
+                  deleteOption = !deleteOption;
+                });
               },
               icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
             ),
