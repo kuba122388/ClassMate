@@ -5,19 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../consts/consts.dart';
 
 class UserDetailPage extends StatelessWidget {
+  bool deleted = false;
   final String email;
-  final Function updateUserList; // Dodaj parametr updateUserList
 
-  const UserDetailPage({Key? key, required this.email, required this.updateUserList});
-  //const UserDetailPage({super.key, required this.email});
+  UserDetailPage({super.key, required this.email});
 
   Future<Map<String, dynamic>> _fetchUserData() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     try {
-      QuerySnapshot snapshot = await _firestore
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
+      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: email).get();
 
       if (snapshot.docs.isNotEmpty) {
         return snapshot.docs.first.data() as Map<String, dynamic>;
@@ -30,31 +26,15 @@ class UserDetailPage extends StatelessWidget {
     }
   }
 
-  void _deleteUser(BuildContext context) async {
+  Future<void> _deleteUser(BuildContext context) async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    final FirebaseAuth _auth = FirebaseAuth.instance;
 
     try {
-      // Usuń użytkownika z Firestore
-      QuerySnapshot snapshot = await _firestore
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
+      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: email).get();
 
       for (var doc in snapshot.docs) {
         await _firestore.collection('users').doc(doc.id).delete();
       }
-
-      // Usuń użytkownika z Firebase Authentication
-      User? user = (await _auth.fetchSignInMethodsForEmail(email)).isNotEmpty
-          ? _auth.currentUser
-          : null;
-
-      if (user != null) {
-        await user.delete();
-      }
-
-      Navigator.of(context).pop(true); // Przekazanie wyniku "true" po usunięciu
     } catch (e) {
       print("Error deleting user: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,6 +44,7 @@ class UserDetailPage extends StatelessWidget {
   }
 
   Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
+
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -74,16 +55,15 @@ class UserDetailPage extends StatelessWidget {
             TextButton(
               child: const Text('Nie'),
               onPressed: () {
-                Navigator.of(context).pop(); // Zamknięcie okna dialogowego
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Tak'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Zamknięcie okna dialogowego
-                _deleteUser(context);
-                Navigator.of(context).pop(true);// Usunięcie użytkownika
-
+              onPressed: () async {
+                await _deleteUser(context);
+                deleted = true;
+                Navigator.pop(context, true);
               },
             ),
           ],
@@ -317,7 +297,10 @@ class UserDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 30), // Zwiększony odstęp
                   ElevatedButton(
-                    onPressed: () => _showDeleteConfirmationDialog(context),
+                    onPressed: () async {
+                      await _showDeleteConfirmationDialog(context);
+                      if(deleted) Navigator.pop(context, true);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),

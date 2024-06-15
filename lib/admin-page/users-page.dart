@@ -33,9 +33,7 @@ class _UsersPageState extends State<UsersPage> {
     }
   }
 
-  void _updateUserList() async {
-    setState(() {}); // Refresh state
-    // Retrieve the user list again
+  Future<void> _updateUserList() async {
     List<String> newUserEmails = await _fetchUserEmails();
     setState(() {
       userEmails = newUserEmails;
@@ -63,19 +61,21 @@ class _UsersPageState extends State<UsersPage> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
-              bool? isDeleted = await Navigator.push(
+              final isDeleted = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => UserDetailPage(
                     email: userEmails[index],
-                    updateUserList: _updateUserList, // Passing the method to update the list
                   ),
                 ),
               );
 
-              if (isDeleted == true) {
-                _updateUserList(); // Update the list upon return
-              }
+            if(isDeleted) {
+              setState(() {
+                  _updateUserList();
+                });
+            }
+
             },
             child: Center(
               child: Card(
