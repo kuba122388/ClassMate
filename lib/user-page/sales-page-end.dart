@@ -1,4 +1,3 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -71,7 +70,7 @@ class _SalesPageEndState extends State<SalesPageEnd> {
           children: [
             SizedBox(
               child: Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.03 , bottom: screenHeight * 0.01),
+                padding: EdgeInsets.only(top: screenHeight * 0.04 , bottom: screenHeight * 0.02),
                 child: Text(
                   widget.description,
                   style: const TextStyle(
@@ -94,6 +93,7 @@ class _SalesPageEndState extends State<SalesPageEnd> {
               ),
               width: screenWidth * 0.9,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
                     width: screenWidth * 0.9,
