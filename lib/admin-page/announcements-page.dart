@@ -40,7 +40,6 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         fetchAnnouncements();
       });
     }
-
   }
 
   @override
@@ -65,10 +64,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                       return const Center(
                           child: Text(
                         'Brak dodanych ogłoszeń',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontFamily: 'Asap'),
+                        style: TextStyle(color: Colors.white, fontSize: 24, fontFamily: 'Asap'),
                       ));
                     } else {
                       return ListView.builder(
@@ -77,8 +73,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                           var announcement = snapshot.data![index];
                           var timestamp = announcement['date'] as Timestamp;
                           var date = timestamp.toDate();
-                          var formattedDate =
-                              '${date.day}-${date.month}-${date.year}';
+                          var formattedDate = '${date.day}-${date.month}-${date.year}';
                           var weekdayIndex = date.weekday;
 
                           Map<int, String> dayNames = {
@@ -94,8 +89,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                           var dayOfWeek = dayNames[weekdayIndex];
 
                           return Container(
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               color: Colors.transparent,
@@ -115,16 +109,12 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                 ),
                                 const SizedBox(height: 8.0),
                                 FutureBuilder<String>(
-                                  future:
-                                      _getImageUrl(announcement['imageLink']),
+                                  future: _getImageUrl(announcement['imageLink']),
                                   builder: (context, imageSnapshot) {
-                                    if (imageSnapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return const Center(
-                                          child: CircularProgressIndicator());
+                                    if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                                      return const Center(child: CircularProgressIndicator());
                                     } else if (imageSnapshot.hasError) {
-                                      return const Center(
-                                          child: Icon(Icons.error));
+                                      return const Center(child: Icon(Icons.error));
                                     } else {
                                       return Container(
                                         child: Stack(
@@ -132,17 +122,14 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                             ColorFiltered(
                                               colorFilter: deleteOption
                                                   ? ColorFilter.mode(
-                                                      COLOR_BACKGROUND_DARKER
-                                                          .withOpacity(0.4),
+                                                      COLOR_BACKGROUND_DARKER.withOpacity(0.4),
                                                       BlendMode.dstATop,
                                                     )
                                                   : ColorFilter.mode(
-                                                      Colors.transparent
-                                                          .withOpacity(0),
+                                                      Colors.transparent.withOpacity(0),
                                                       BlendMode.darken,
                                                     ),
-                                              child: Image.network(
-                                                  imageSnapshot.data!),
+                                              child: Image.network(imageSnapshot.data!),
                                             ),
                                             Visibility(
                                               visible: deleteOption,
@@ -151,68 +138,39 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                                   child: ElevatedButton(
                                                     onPressed: () async {
                                                       try {
-                                                        await FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                'announcements')
-                                                            .doc(announcement[
-                                                                'ID'])
+                                                        await FirebaseFirestore.instance
+                                                            .collection('announcements')
+                                                            .doc(announcement['ID'])
                                                             .delete();
 
                                                         setState(() {
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  const SnackBar(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    1500),
-                                                            behavior:
-                                                                SnackBarBehavior
-                                                                    .floating,
-                                                            content: Text(
-                                                                "Ogłoszenie zostało pomyślnie usunięte!",
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center),
+                                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                            duration: Duration(milliseconds: 1500),
+                                                            behavior: SnackBarBehavior.floating,
+                                                            content: Text("Ogłoszenie zostało pomyślnie usunięte!",
+                                                                textAlign: TextAlign.center),
                                                           ));
                                                         });
                                                       } catch (e) {
                                                         setState(() {});
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(
-                                                                const SnackBar(
-                                                          duration: Duration(
-                                                              milliseconds:
-                                                                  1500),
-                                                          behavior:
-                                                              SnackBarBehavior
-                                                                  .floating,
-                                                          content: Text(
-                                                              "Wystąpił problem z usunięciem ogłoszenia",
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center),
+                                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                                          duration: Duration(milliseconds: 1500),
+                                                          behavior: SnackBarBehavior.floating,
+                                                          content: Text("Wystąpił problem z usunięciem ogłoszenia",
+                                                              textAlign: TextAlign.center),
                                                         ));
                                                       }
                                                     },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 20,
-                                                          vertical: 10),
-                                                      backgroundColor:
-                                                          COLOR_BACKGROUND_DARKER,
+                                                    style: ElevatedButton.styleFrom(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                                      backgroundColor: COLOR_BACKGROUND_DARKER,
                                                     ),
                                                     child: const Text(
                                                       'USUN',
                                                       style: TextStyle(
                                                         fontSize: 24,
                                                         fontFamily: 'Asap',
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -245,16 +203,16 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                 child: Material(
                   elevation: 20,
                   shadowColor: Colors.black,
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(25.0),
                   color: Colors.transparent,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(25.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.7),
-                          spreadRadius: 2,
-                          blurRadius: 10,
+                          color: Colors.black.withOpacity(0.25),
+                          spreadRadius: 0,
+                          blurRadius: 4,
                           offset: Offset(0, 4),
                         ),
                       ],
@@ -264,8 +222,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                         _navigateToAddAnnouncement(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         backgroundColor: COLOR_BACKGROUND_DARKER,
                       ),
                       child: const Text(
@@ -289,16 +246,16 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                 child: Material(
                   elevation: 20,
                   shadowColor: Colors.black,
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(25.0),
                   color: Colors.transparent,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
+                      borderRadius: BorderRadius.circular(25.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.7),
-                          spreadRadius: 2,
-                          blurRadius: 10,
+                          color: Colors.black.withOpacity(0.25),
+                          spreadRadius: 0,
+                          blurRadius: 4,
                           offset: Offset(0, 4),
                         ),
                       ],
@@ -310,8 +267,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                         backgroundColor: COLOR_BACKGROUND_DARKER,
                       ),
                       child: const Text(
@@ -335,8 +291,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   Future<String> _getImageUrl(String? imageUrl) async {
     if (imageUrl != null) {
-      final ref =
-          FirebaseStorage.instance.ref().child('announcements').child(imageUrl);
+      final ref = FirebaseStorage.instance.ref().child('announcements').child(imageUrl);
       var url = await ref.getDownloadURL() as String;
       print('TTUAJ JEST LINK!: $url');
       return url;
@@ -404,8 +359,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                   deleteOption = !deleteOption;
                 });
               },
-              icon: Image.asset('././images/back_icon.png',
-                  height: screenHeight * 0.06),
+              icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
             ),
           ],
         ),
