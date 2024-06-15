@@ -184,17 +184,17 @@ class _SalesPageState extends State<SalesPage> {
                   child: Material(
                     elevation: 20,
                     shadowColor: Colors.black,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(30.0),
                     color: Colors.transparent,
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.7),
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(0.25),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -227,17 +227,17 @@ class _SalesPageState extends State<SalesPage> {
                   child: Material(
                     elevation: 20,
                     shadowColor: Colors.black,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(30.0),
                     color: Colors.transparent,
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.7),
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(0.25),
+                            spreadRadius: 0,
+                            blurRadius: 4,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -335,25 +335,16 @@ class _SalesPageState extends State<SalesPage> {
       padding: EdgeInsets.zero,
       child: Container(
         decoration: const BoxDecoration(
-          color: COLOR_BACKGROUND_DARKER,
-          borderRadius: BorderRadius.vertical(top: BORDER_RADIUS),
-        ),
+            color: COLOR_BACKGROUND_DARKER, borderRadius: BorderRadius.vertical(top: BORDER_RADIUS)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               onPressed: () {
-                if (deleteOption == false) {
-                  Navigator.of(context).pop();
-                  return;
-                }
-                setState(() {
-                  deleteOption = !deleteOption;
-                });
+                Navigator.of(context).pop();
               },
-              icon: Image.asset('././images/back_icon.png',
-                  height: screenHeight * 0.06),
-            ),
+              icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
+            )
           ],
         ),
       ),
