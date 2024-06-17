@@ -1,51 +1,67 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../consts/consts.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final String email;
+
+  const SettingsPage({Key? key, required this.email}) : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  Map<String, dynamic>? _userData;
 
-  void _navigateToSettings(BuildContext context) {
-    // Nawigacja do reszty ustawień
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => RestOfSettingsPage()));
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: widget.email)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          _userData = snapshot.docs.first.data() as Map<String, dynamic>;
+        });
+      } else {
+        setState(() {
+          _userData = {};
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      setState(() {
+        _userData = {};
+      });
+    }
+  }
+
+  String _formatDate(dynamic date) {
+    if (date is Timestamp) {
+      DateTime dateTime = date.toDate();
+      return DateFormat('yyyy-MM-dd').format(dateTime);
+    } else if (date is String) {
+      DateTime dateTime = DateTime.parse(date);
+      return DateFormat('yyyy-MM-dd').format(dateTime);
+    } else {
+      return 'Invalid date';
+    }
   }
 
   void _logout(BuildContext context) {
     FirebaseAuth.instance.signOut();
     Navigator.of(context).popUntil((route) => route.isFirst);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: COLOR_BACKGROUND,
-      appBar: BuildTopNav(context),
-      body: BuildBody(context),
-      bottomNavigationBar: BuildBackButton(context),
-    );
-  }
-
-  Center BuildBody(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          SizedBox(height: screenHeight * 0.2),
-          BuildNavButton('Reszta ustawień', context, _navigateToSettings),
-          SizedBox(height: screenHeight * 0.05),
-          BuildNavButton('Wyloguj', context, _logout),
-        ],
-      ),
-    );
   }
 
   PreferredSizeWidget BuildTopNav(BuildContext context) {
@@ -63,12 +79,12 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Colors.white,
               offset: Offset(0, 2.0),
               blurRadius: 4.0,
-            )
+            ),
           ],
         ),
         child: Center(
           child: Text(
-            'Ustawienia',
+            'USTAWIENIA',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -100,12 +116,179 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: Image.asset('././images/back_icon.png',
-                  height: screenHeight * 0.06),
-            )
+              icon: Image.asset(
+                '././images/back_icon.png',
+                height: screenHeight * 0.06,
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: COLOR_BACKGROUND,
+      appBar: BuildTopNav(context),
+      body: _userData != null
+          ? Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              "Dane uzytkownika",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Asap',
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: screenWidth * 0.9,
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF313E50),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    offset: Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Email: ',
+                          style: TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextSpan(
+                          text: _userData!['email'],
+                          style: const TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Imię: ',
+                          style: TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextSpan(
+                          text: _userData!['firstName'],
+                          style: const TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Nazwisko: ',
+                          style: TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextSpan(
+                          text: _userData!['lastName'],
+                          style: const TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Data urodzenia: ',
+                          style: TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextSpan(
+                          text: _formatDate(_userData!['dateOfBirth']),
+                          style: const TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Uczelnia: ',
+                          style: TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextSpan(
+                          text: _userData!['university'],
+                          style: const TextStyle(
+                            color: Color(0xFFF6FFF8),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30), // Zwiększony odstęp
+            SizedBox(height: screenHeight * 0.05),
+            BuildNavButton('Wyloguj', context, _logout),
+          ],
+        ),
+      )
+          : const Center(child: CircularProgressIndicator()),
+      bottomNavigationBar: BuildBackButton(context),
     );
   }
 

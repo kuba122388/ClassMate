@@ -121,12 +121,10 @@ class _MainUserPageState extends State<MainUserPage> {
                 blurRadius: 4.0,
               )
             ]),
-        // child: Image.asset('././images/person_icon.png'),
         child: Row(
           children: [
             Container(
               width: MediaQuery.of(context).size.width / 2,
-              // padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: const Column(
                 children: [
                   Expanded(
@@ -152,7 +150,6 @@ class _MainUserPageState extends State<MainUserPage> {
                   ),
                 ],
               ),
-              // alignment: Alignment.centerLeft,
             ),
             Container(
               width: MediaQuery.of(context).size.width / 2,
@@ -162,7 +159,7 @@ class _MainUserPageState extends State<MainUserPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                    MaterialPageRoute(builder: (context) => SettingsPage(email: widget.email)),
                   );
                 },
                 icon: Image.asset('././images/settings.png'),
