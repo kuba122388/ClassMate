@@ -47,7 +47,29 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
   }
 
   Future<void> _uploadImage() async {
-    if (_image == null) return;
+    if(_image == null && _selectedDate == null){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Proszę podać datę i wybrać obraz promocji", textAlign: TextAlign.center),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2)));
+      return;
+    }
+
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Proszę wybrać obraz promocji", textAlign: TextAlign.center),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2)));
+      return;
+    }
+
+    if(_selectedDate == null){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Proszę wybrać datę wydarzenia", textAlign: TextAlign.center),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2)));
+      return;
+    }
 
     final fileName = _image!.path.split('/').last;
     final ref = FirebaseStorage.instance.ref().child('announcements').child(fileName);
