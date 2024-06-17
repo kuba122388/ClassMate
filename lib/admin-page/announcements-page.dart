@@ -319,9 +319,10 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             ),
           ],
         ),
-        child: const Center(
-          child: Text(
-            'Ogłoszenia',
+        child: Center(
+          child: deleteOption ? 
+          Image.asset('images/announcements.png') : const Text(
+            'OGŁOSZENIA',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
