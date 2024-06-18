@@ -20,6 +20,9 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     for (var doc in snapshot.docs) {
       announcements.add(doc.data());
     }
+
+    await Future.delayed(const Duration(seconds: 1));
+
     return announcements;
   }
 
@@ -33,7 +36,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         future: fetchAnnouncements(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Colors.white));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -84,7 +87,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                         future: _getImageUrl(announcement['imageLink']),
                         builder: (context, imageSnapshot) {
                           if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator(color: Colors.white,));
                           } else if (imageSnapshot.hasError) {
                             return const Center(child: Icon(Icons.error));
                           } else {
@@ -108,6 +111,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     if (imageUrl != null) {
       final ref = FirebaseStorage.instance.ref().child('announcements').child(imageUrl);
       var url = await ref.getDownloadURL() as String;
+      await Future.delayed(const Duration(seconds: 2));
       print('TTUAJ JEST LINK!: $url');
       return url;
     } else {

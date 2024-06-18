@@ -27,8 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final List<String> Uczelnie = [
     'Politechnika Łódzka',
-    'Politechnika Wrocławska',
-    'Politechnika Częstochowska'
+    'Uniwersytet Łódzki',
   ];
 
   Map<String, bool> fieldErrors = {

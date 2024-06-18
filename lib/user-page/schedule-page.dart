@@ -188,7 +188,7 @@ class _SchedulePageState extends State<SchedulePage> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const CircularProgressIndicator(color: Colors.white);
           }
 
           List<DocumentSnapshot> eventsForSelectedDay =

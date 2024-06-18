@@ -43,7 +43,7 @@ class _SalesPageState extends State<SalesPage> {
                     future: fetchSales(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator(color: Colors.white));
                       } else if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -69,7 +69,7 @@ class _SalesPageState extends State<SalesPage> {
                                     future: _getImageUrl(sales['image']),
                                     builder: (context, imageSnapshot) {
                                       if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                                        return const Center(child: CircularProgressIndicator());
+                                        return const Center(child: CircularProgressIndicator(color: Colors.white));
                                       } else if (imageSnapshot.hasError) {
                                         return const Center(child: Icon(Icons.error));
                                       } else if (imageSnapshot.hasData && imageSnapshot.data != null) {
@@ -282,6 +282,7 @@ class _SalesPageState extends State<SalesPage> {
       final ref = FirebaseStorage.instance.ref().child('sales').child(imageUrl);
       var url = await ref.getDownloadURL();
       print('TTUAJ JEST LINK!: $url');
+      await Future.delayed(const Duration(seconds: 1));
       return url;
     } else {
       print('Nie działa');

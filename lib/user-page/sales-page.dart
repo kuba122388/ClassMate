@@ -1,10 +1,8 @@
 import 'package:classmate/user-page/sales-page-end.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
-import '../login-page/login-page.dart';
 
 class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
@@ -22,6 +20,7 @@ class _SalesPageState extends State<SalesPage> {
     for (var doc in snapshot.docs) {
       sales.add(doc.data());
     }
+    await Future.delayed(const Duration(seconds: 2));
     return sales;
   }
 
@@ -35,7 +34,7 @@ class _SalesPageState extends State<SalesPage> {
           future: fetchSales(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator(color: Colors.white));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -62,7 +61,7 @@ class _SalesPageState extends State<SalesPage> {
                           future: _getImageUrl(sales['image']),
                           builder: (context, imageSnapshot) {
                             if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator(color: Colors.white,));
                             } else if (imageSnapshot.hasError) {
                               return const Center(child: Icon(Icons.error));
                             } else if (imageSnapshot.hasData && imageSnapshot.data != null) {
@@ -137,6 +136,7 @@ class _SalesPageState extends State<SalesPage> {
     if (imageUrl != null) {
       final ref = FirebaseStorage.instance.ref().child('sales').child(imageUrl);
       var url = await ref.getDownloadURL();
+      await Future.delayed(const Duration(seconds: 1));
       print('TTUAJ JEST LINK!: $url');
       return url;
     } else {
