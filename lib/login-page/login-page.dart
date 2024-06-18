@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
-                      UserCredential userCredential = await FirebaseAuth
+                      await FirebaseAuth
                           .instance
                           .signInWithEmailAndPassword(
                         email: _emailController.text,
@@ -96,6 +96,14 @@ class _LoginPageState extends State<LoginPage> {
                             .showSnackBar(const SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text("E-mail posiada nieprawidłowy format",
+                              textAlign: TextAlign.center),
+                        ));
+                      }
+                      else if(e.code == 'network-request-failed'){
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text("Wystąpił problem. Sprawdź połączenie z Internetem i spróbuj jeszcze raz",
                               textAlign: TextAlign.center),
                         ));
                       }

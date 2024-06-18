@@ -61,8 +61,8 @@ class _MainUserPageState extends State<MainUserPage> {
             child: Image.asset('././images/logo.png'),
           ),
           const Divider(
-            color: Colors.white, // Kolor biały
-            thickness: 4, // Grubość linii
+            color: Colors.white,
+            thickness: 4,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -268,9 +268,29 @@ class _MainUserPageState extends State<MainUserPage> {
                   onPressed: () async {
                     if (taskController.text.isNotEmpty) {
                       Task newTask = Task(task: taskController.text, timestamp: Timestamp.now());
-                      await newTask.saveTask(widget.email);
+                      try{
+                        await newTask.saveTask(widget.email);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text("Dodano nowe zadanie do listy!", textAlign: TextAlign.center),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(milliseconds: 2500)));
+                      }
+                      catch(e){
+                        print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text("Wystąpił błąd", textAlign: TextAlign.center),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(milliseconds: 2500)));
+                      }
+                      Navigator.pop(context);
                       taskController.clear();
-                      Navigator.of(context).pop();
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("Nie wprowadzono żadnej treści", textAlign: TextAlign.center),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(milliseconds: 2500)));
+                      Navigator.pop(context);
                     }
                   },
                   child: const Text('Zapisz'),

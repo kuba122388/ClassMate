@@ -1,19 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../consts/consts.dart';
 
-class UserDetailPage extends StatelessWidget {
-  bool deleted = false;
+class UserDetailPage extends StatefulWidget {
   final String email;
 
   UserDetailPage({super.key, required this.email});
 
+  @override
+  State<UserDetailPage> createState() => _UserDetailPageState();
+}
+
+class _UserDetailPageState extends State<UserDetailPage> {
+  bool deleted = false;
+
   Future<Map<String, dynamic>> _fetchUserData() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     try {
-      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: email).get();
+      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: widget.email).get();
 
       if (snapshot.docs.isNotEmpty) {
         return snapshot.docs.first.data() as Map<String, dynamic>;
@@ -30,7 +35,7 @@ class UserDetailPage extends StatelessWidget {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     try {
-      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: email).get();
+      QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: widget.email).get();
 
       for (var doc in snapshot.docs) {
         await _firestore.collection('users').doc(doc.id).delete();
@@ -144,7 +149,6 @@ class UserDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -165,7 +169,7 @@ class UserDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   Container(
                     width: screenWidth * 0.9,
                     padding: const EdgeInsets.all(20.0),
@@ -301,19 +305,28 @@ class UserDetailPage extends StatelessWidget {
                       await _showDeleteConfirmationDialog(context);
                       if(deleted) Navigator.pop(context, true);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
                     ),
-                    child: const Text(
-                      'USUN',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(15),
+                      width: screenWidth * 0.50,
+                      decoration: BoxDecoration(
+                        color: COLOR_BACKGROUND_DARKER,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: const Text(
+                        'USUN',
+                        style: TextStyle(
+                          fontFamily: 'Asap',
+                          fontSize: 18,
+                          letterSpacing: 0.5,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

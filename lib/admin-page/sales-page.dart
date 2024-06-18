@@ -199,8 +199,16 @@ class _SalesPageState extends State<SalesPage> {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () {
-                          _navigateToAddSales(context);
+                        onPressed: () async {
+                          await _navigateToAddSales(context);
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            duration: Duration(milliseconds: 1500),
+                            behavior: SnackBarBehavior.floating,
+                            content: Text(
+                                "Ogłoszenie zostało pomyślnie dodane!",
+                                textAlign: TextAlign.center),
+                          ));
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -341,7 +349,13 @@ class _SalesPageState extends State<SalesPage> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                if (deleteOption == false) {
+                  Navigator.of(context).pop();
+                  return;
+                }
+                setState(() {
+                  deleteOption = !deleteOption;
+                });
               },
               icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
             )

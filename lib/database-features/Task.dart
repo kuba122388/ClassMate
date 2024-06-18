@@ -16,7 +16,7 @@ class Task {
   Future<void> saveTask(String email) async {
     try {
       await FirebaseFirestore.instance
-          .collection('todolist')
+          .collection('users')
           .doc(email)
           .collection('tasks')
           .add(toMap());
@@ -38,7 +38,7 @@ class TaskList extends StatelessWidget {
         children: [
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
-                .collection('todolist')
+                .collection('users')
                 .doc(userEmail)
                 .collection('tasks')
                 .orderBy('timestamp', descending: true)
@@ -48,8 +48,17 @@ class TaskList extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Wystąpił błąd: ${snapshot.error}'));
-              } else {
+              }
+              else {
                 List<DocumentSnapshot> tasks = snapshot.data!.docs;
+                if(tasks.isEmpty){
+                  return const Text('Wszystko wykonane!', style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontFamily: 'Asap',
+                    fontStyle: FontStyle.italic
+                  ),);
+                }
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const PageScrollPhysics(),
@@ -70,7 +79,7 @@ class TaskList extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await FirebaseFirestore.instance
-                              .collection('todolist')
+                              .collection('users')
                               .doc(userEmail)
                               .collection('tasks')
                               .doc(tasks[index].id)
@@ -96,7 +105,7 @@ class TaskList extends StatelessWidget {
                               onTap: () async {
                                 taskData['isDone']
                                     ? await FirebaseFirestore.instance
-                                        .collection('todolist')
+                                        .collection('users')
                                         .doc(userEmail)
                                         .collection('tasks')
                                         .doc(tasks[index].id)
