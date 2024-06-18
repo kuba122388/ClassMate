@@ -39,8 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          SizedBox(height: screenHeight * 0.2),
-          BuildNavButton('Reszta ustawień', context, _navigateToSettings),
+
           SizedBox(height: screenHeight * 0.05),
           BuildNavButton('Wyloguj', context, _logout),
         ],
@@ -68,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         child: Center(
           child: Text(
-            'Ustawienia',
+            'USTAWIENIA',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
