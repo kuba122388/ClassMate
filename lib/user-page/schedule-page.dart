@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -7,17 +6,17 @@ import 'package:intl/date_symbol_data_local.dart';
 import '../consts/consts.dart';
 
 class SchedulePage extends StatefulWidget {
-  const SchedulePage({super.key});
+  final String email;
+
+  const SchedulePage({super.key, required this.email});
 
   @override
   State<SchedulePage> createState() => _SchedulePageState();
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  User? _user;
   late CollectionReference _eventsCollection;
   late TextEditingController _titleController;
 
@@ -39,8 +38,14 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   void _initializeUser() {
-    _user = _auth.currentUser;
-    _eventsCollection = _firestore.collection('users').doc(_user!.uid).collection('events');
+    _eventsCollection =
+        _firestore.collection('users').doc(widget.email).collection('events');
+  }
+
+  bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   @override
@@ -50,36 +55,58 @@ class _SchedulePageState extends State<SchedulePage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: COLOR_BACKGROUND,
       appBar: _buildTopNav(context),
-      body: Column(
+      body: Stack(
         children: [
-          _buildCalendar(),
           Column(
             children: [
-              SizedBox(
-                height: screenHeight*0.22, // Ustaw wysokość kontenera
-                child: Column(children: [
-                  _buildEventList()
-                ],), // Umieść _buildEventList() wewnątrz kontenera o określonej wysokości
-              ),
+              _buildCalendar(),
+              Column(
+                children: [
+                  SizedBox(
+                    height: screenHeight * 0.22, // Ustaw wysokość kontenera
+                    child: Column(
+                      children: [_buildEventList()],
+                    ),
+                  ),
+                ],
+              )
             ],
-          )
-
+          ),
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                _showAddEventDialog(context);
+              },
+              backgroundColor: COLOR_BACKGROUND_DARKER,
+              child: const Icon(Icons.add, color: Colors.white),
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                if (!isSameDate(_selectedDay, DateTime.now())) {
+                  setState(() {
+                    _selectedDay = DateTime.now();
+                  });
+                }
+              },
+              backgroundColor: COLOR_BACKGROUND_DARKER,
+              child: Image.asset('images/today.png', height: 32,),
+            ),
+          ),
         ],
       ),
-
       bottomNavigationBar: _buildBackButton(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddEventDialog(context);
-        },
-        backgroundColor: COLOR_BACKGROUND_DARKER, // Ustaw kolor tła na czarny
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
   Widget _buildCalendar() {
     return TableCalendar(
+      daysOfWeekHeight: 20,
       locale: 'pl_PL',
       calendarFormat: _calendarFormat,
       startingDayOfWeek: StartingDayOfWeek.monday,
@@ -108,18 +135,25 @@ class _SchedulePageState extends State<SchedulePage> {
           shape: BoxShape.circle,
         ),
         outsideDaysVisible: false,
-        todayTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-        selectedTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: COLOR_BACKGROUND_DARKER),
+        todayTextStyle: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        selectedTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: COLOR_BACKGROUND_DARKER),
       ),
       daysOfWeekStyle: const DaysOfWeekStyle(
         weekdayStyle: TextStyle(color: Colors.white),
         weekendStyle: TextStyle(color: Colors.red),
       ),
       headerStyle: const HeaderStyle(
-        titleTextStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
+        titleTextStyle: TextStyle(
+            fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
         formatButtonVisible: false,
-        leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white, size:40),
-        rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white, size:40),
+        leftChevronIcon:
+            Icon(Icons.chevron_left, color: Colors.white, size: 40),
+        rightChevronIcon:
+            Icon(Icons.chevron_right, color: Colors.white, size: 40),
         titleCentered: true,
       ),
       calendarBuilders: CalendarBuilders(
@@ -133,7 +167,9 @@ class _SchedulePageState extends State<SchedulePage> {
               '${date.day}',
               style: TextStyle(
                 fontSize: 20,
-                color: isToday ? Colors.white : (isWeekend ? Colors.red : Colors.white),
+                color: isToday
+                    ? Colors.white
+                    : (isWeekend ? Colors.red : Colors.white),
               ),
             ),
           );
@@ -155,7 +191,8 @@ class _SchedulePageState extends State<SchedulePage> {
             return const CircularProgressIndicator();
           }
 
-          List<DocumentSnapshot> eventsForSelectedDay = snapshot.data!.docs.where((DocumentSnapshot document) {
+          List<DocumentSnapshot> eventsForSelectedDay =
+              snapshot.data!.docs.where((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
             DateTime eventDate = (data['date'] as Timestamp).toDate();
             return isSameDay(eventDate, _selectedDay);
@@ -165,9 +202,11 @@ class _SchedulePageState extends State<SchedulePage> {
             itemCount: eventsForSelectedDay.length,
             itemBuilder: (context, index) {
               DocumentSnapshot eventDoc = eventsForSelectedDay[index];
-              Map<String, dynamic> data = eventDoc.data() as Map<String, dynamic>;
+              Map<String, dynamic> data =
+                  eventDoc.data() as Map<String, dynamic>;
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   color: COLOR_BACKGROUND_DARKER,
@@ -189,7 +228,7 @@ class _SchedulePageState extends State<SchedulePage> {
                       style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, color: Colors.white),
+                      icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed: () {
                         _showDeleteConfirmationDialog(eventDoc.id);
                       },
@@ -210,17 +249,17 @@ class _SchedulePageState extends State<SchedulePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: COLOR_BACKGROUND_DARKER,
-          title: Text(
+          title: const Text(
             'Potwierdź usunięcie',
             style: TextStyle(color: Colors.white),
           ),
-          content: Text(
+          content: const Text(
             'Czy na pewno chcesz usunąć to wydarzenie?',
             style: TextStyle(color: Colors.white),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(
+              child: const Text(
                 'Anuluj',
                 style: TextStyle(color: Colors.white),
               ),
@@ -229,7 +268,7 @@ class _SchedulePageState extends State<SchedulePage> {
               },
             ),
             TextButton(
-              child: Text(
+              child: const Text(
                 'Usuń',
                 style: TextStyle(color: Colors.white),
               ),
@@ -270,7 +309,7 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
         child: const Center(
           child: Text(
-            'Plan dnia',
+            'PLAN DNIA',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -344,16 +383,18 @@ class _SchedulePageState extends State<SchedulePage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     _selectDate(context);
                   },
-                  child: Text('Wybierz datę'),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(COLOR_BACKGROUND_DARKER),
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        COLOR_BACKGROUND_DARKER),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
                   ),
+                  child: const Text('Wybierz datę'),
                 ),
               ],
             ),
@@ -361,8 +402,9 @@ class _SchedulePageState extends State<SchedulePage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
+                  _titleController.clear();
                 },
-                child: Text(
+                child: const Text(
                   'Anuluj',
                   style: TextStyle(color: Colors.white),
                 ),
@@ -370,9 +412,10 @@ class _SchedulePageState extends State<SchedulePage> {
               TextButton(
                 onPressed: () {
                   addEvent(_titleController.text, _selectedDay);
+                  _titleController.clear();
                   Navigator.of(context).pop();
                 },
-                child: Text(
+                child: const Text(
                   'Dodaj',
                   style: TextStyle(color: Colors.white),
                 ),

@@ -187,7 +187,7 @@ class _MainUserPageState extends State<MainUserPage> {
             IconButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SchedulePage()));
+                    MaterialPageRoute(builder: (context) => SchedulePage(email: widget.email,)));
               },
               icon: Image.asset('././images/calendar.png',
                   height: screenHeight * 0.06),
