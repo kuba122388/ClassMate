@@ -141,17 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            Text(
-              "Dane uzytkownika",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Asap',
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 60),
             Container(
               width: screenWidth * 0.9,
               padding: const EdgeInsets.all(20.0),

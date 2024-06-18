@@ -164,7 +164,7 @@ class _SalesPageState extends State<SalesPage> {
             ]),
         child: const Center(
           child: Text(
-            'Promocje',
+            'PROMOCJE',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,

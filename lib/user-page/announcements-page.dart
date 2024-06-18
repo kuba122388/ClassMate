@@ -15,7 +15,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     List<Map<String, dynamic>> announcements = [];
     var collection = FirebaseFirestore.instance.collection('announcements');
 
-    var snapshot = await collection.get();
+    var snapshot = await collection.orderBy('date', descending: false).get(); // Sortowanie według daty rosnąco
+
     for (var doc in snapshot.docs) {
       announcements.add(doc.data());
     }
@@ -58,7 +59,6 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                 };
 
                 var dayOfWeek = dayNames[weekdayIndex];
-
 
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -136,7 +136,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         ),
         child: const Center(
           child: Text(
-            'Ogłoszenia',
+            'OGŁOSZENIA',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
