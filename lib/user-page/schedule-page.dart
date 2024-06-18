@@ -53,10 +53,17 @@ class _SchedulePageState extends State<SchedulePage> {
       body: Column(
         children: [
           _buildCalendar(),
-          SizedBox(
-            height: screenHeight*0.22, // Ustaw wysokość kontenera
-            child: _buildEventList(), // Umieść _buildEventList() wewnątrz kontenera o określonej wysokości
-          ),
+          Column(
+            children: [
+              SizedBox(
+                height: screenHeight*0.22, // Ustaw wysokość kontenera
+                child: Column(children: [
+                  _buildEventList()
+                ],), // Umieść _buildEventList() wewnątrz kontenera o określonej wysokości
+              ),
+            ],
+          )
+
         ],
       ),
 
