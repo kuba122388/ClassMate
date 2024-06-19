@@ -194,11 +194,6 @@ class _SchedulePageState extends State<SchedulePage> {
           if (snapshot.hasError) {
             return Text('Wystąpił błąd: ${snapshot.error}');
           }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(color: Colors.white);
-          }
-
           List<DocumentSnapshot> eventsForSelectedDay =
               snapshot.data!.docs.where((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
@@ -463,6 +458,7 @@ class _SchedulePageState extends State<SchedulePage> {
     );
 
     final DateTime? picked = await showDatePicker(
+      locale: const Locale('pl', 'PL'),
       context: context,
       initialDate: _selectedDay,
       firstDate: DateTime(2021),

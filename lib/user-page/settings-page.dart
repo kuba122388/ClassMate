@@ -277,7 +277,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const Center(child: CircularProgressIndicator(color: Colors.white,)),
       bottomNavigationBar: BuildBackButton(context),
     );
   }

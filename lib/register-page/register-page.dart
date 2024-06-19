@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../consts/consts.dart';
 import '../database-features/DatabaseFeatures.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -43,11 +44,30 @@ class _RegisterPageState extends State<RegisterPage> {
   void _presentDatePicker() {
     DateTime now = DateTime.now();
     DateTime lastDate = DateTime(now.year - 16, now.month, now.day);
+
+    final ThemeData themeData = Theme.of(context);
+    const ColorScheme colorScheme = ColorScheme.dark(
+      surface: COLOR_BACKGROUND,
+      onPrimary: Colors.black,
+      primary: Colors.white,
+    );
+
+    final ThemeData dialogTheme = themeData.copyWith(
+      colorScheme: colorScheme,
+    );
+
     showDatePicker(
+      locale: const Locale('pl', 'PL'),
       context: context,
       initialDate: lastDate,
       firstDate: DateTime(1900),
       lastDate: lastDate,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: dialogTheme,
+          child: child ?? const SizedBox(),
+        );
+      },
     ).then((pickedDate) {
       if (pickedDate == null) {
         return;

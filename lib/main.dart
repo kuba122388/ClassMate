@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'consts/consts.dart';
 import 'register-page/register-page.dart';
 import 'login-page/login-page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate
+      ],
+      supportedLocales: const [
+        Locale('pl'),
+      ],
       routes: {
         '/home': (context) => const MyHome(),
         '/login': (context) => const LoginPage(),

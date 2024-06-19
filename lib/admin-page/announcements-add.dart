@@ -21,11 +21,29 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
   File? _image;
 
   Future<void> _pickDate(BuildContext context) async {
+    final ThemeData themeData = Theme.of(context);
+    const ColorScheme colorScheme = ColorScheme.dark(
+      surface: COLOR_BACKGROUND,
+      onPrimary: Colors.black,
+      primary: Colors.white,
+    );
+
+    final ThemeData dialogTheme = themeData.copyWith(
+      colorScheme: colorScheme,
+    );
+
     final DateTime? pickedDate = await showDatePicker(
+      locale: const Locale('pl', 'PL'),
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: dialogTheme,
+          child: child ?? const SizedBox(),
+        );
+      },
     );
 
     if (pickedDate != null && pickedDate != _selectedDate) {
