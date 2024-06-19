@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
@@ -30,6 +31,8 @@ class _LoginPageState extends State<LoginPage> {
   Center BuildBody(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
+
     return Center(
       child: Column(
         children: [
@@ -53,35 +56,44 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: kToolbarHeight),
               ElevatedButton(
                 onPressed: () async {
+                  AudioPlayer().play(assetSource);
+                  await Future.delayed(const Duration(milliseconds: 200));
                   if (_formKey.currentState!.validate()) {
                     try {
-                      await FirebaseAuth
-                          .instance
-                          .signInWithEmailAndPassword(
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: _emailController.text,
                         password: _hasloController.text,
                       );
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(const SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         behavior: SnackBarBehavior.floating,
-                        content: Text("Zalogowano",
-                            textAlign: TextAlign.center),
+                        content:
+                            Text("Zalogowano", textAlign: TextAlign.center),
+                        duration: Duration(milliseconds: 1500),
                       ));
-                      if(_emailController.text == 'admin@classmate.com'){
+                      assetSource = AssetSource('../sounds/approved.mp3');
+                      if (_emailController.text == 'admin@classmate.com') {
+                        AudioPlayer().play(assetSource);
                         Future.delayed(
-                          const Duration(seconds: 2), () => Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => MainAdminPage(email: _emailController.text)),
-                        ),
+                          const Duration(seconds: 1),
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainAdminPage(
+                                    email: _emailController.text)),
+                          ),
+                        );
+                      } else {
+                        AudioPlayer().play(assetSource);
+                        Future.delayed(
+                          const Duration(seconds: 1),
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MainUserPage(email: _emailController.text)),
+                          ),
                         );
                       }
-                      else{
-                        Future.delayed(
-                          const Duration(seconds: 2), () => Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => MainUserPage(email: _emailController.text)),
-                        ),
-                        );
-                      }
-
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'invalid-credential') {
                         ScaffoldMessenger.of(context)
@@ -90,24 +102,22 @@ class _LoginPageState extends State<LoginPage> {
                           content: Text("Wprowadzone dane są nieprawidłowe",
                               textAlign: TextAlign.center),
                         ));
-                      }
-                      else if(e.code == 'invalid-email'){
+                      } else if (e.code == 'invalid-email') {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text("E-mail posiada nieprawidłowy format",
                               textAlign: TextAlign.center),
                         ));
-                      }
-                      else if(e.code == 'network-request-failed'){
+                      } else if (e.code == 'network-request-failed') {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                           behavior: SnackBarBehavior.floating,
-                          content: Text("Wystąpił problem. Sprawdź połączenie z Internetem i spróbuj jeszcze raz",
+                          content: Text(
+                              "Wystąpił problem. Sprawdź połączenie z Internetem i spróbuj jeszcze raz",
                               textAlign: TextAlign.center),
                         ));
-                      }
-                      else{
+                      } else {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                           behavior: SnackBarBehavior.floating,

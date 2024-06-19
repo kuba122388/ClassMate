@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:classmate/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -21,18 +22,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-          '/home': (context) => const MyHome(),
-          '/login': (context) => const LoginPage(),
-          '/registerpage' : (context) => const RegisterPage(),
-        },
-        home: const MyHome(),
+        '/home': (context) => const MyHome(),
+        '/login': (context) => const LoginPage(),
+        '/registerpage' : (context) => const RegisterPage(),
+      },
+      home: const MyHome(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 void _navigateTo(BuildContext context, String text) {
-
   if(text == 'LOGOWANIE') {
     Navigator.push(
       context,
@@ -57,37 +57,40 @@ class MyHome extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-          backgroundColor: COLOR_BACKGROUND,
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(
-                    top: screenHeight*0.2,
-                    bottom: screenHeight*0.05,
-                  ),
-                  child: Image.asset(
-                    './images/logo.png',
-                    width: screenWidth*0.8,
-                  ),
+        backgroundColor: COLOR_BACKGROUND,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                  top: screenHeight*0.2,
+                  bottom: screenHeight*0.05,
                 ),
+                child: Image.asset(
+                  './images/logo.png',
+                  width: screenWidth*0.8,
+                ),
+              ),
 
-                BuildNavButton('LOGOWANIE', context),
-                SizedBox(height: screenHeight * 0.05),
-                BuildNavButton('REJESTRACJA', context),
-              ],
-            ),
-          )
-      );
+              BuildNavButton('LOGOWANIE', context),
+              SizedBox(height: screenHeight * 0.05),
+              BuildNavButton('REJESTRACJA', context),
+            ],
+          ),
+        )
+    );
   }
 
   Widget BuildNavButton(String text, BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return ElevatedButton(
         onPressed: () {
-          _navigateTo(context, text);
+          AudioPlayer().play(assetSource).then((_) {
+            _navigateTo(context, text);
+          });
         },
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku

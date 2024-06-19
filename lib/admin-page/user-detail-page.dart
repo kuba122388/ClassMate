@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,12 +34,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Future<void> _deleteUser(BuildContext context) async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final AssetSource assetSource = AssetSource('../sounds/approved.mp3');
 
     try {
       QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: widget.email).get();
 
       for (var doc in snapshot.docs) {
         await _firestore.collection('users').doc(doc.id).delete();
+        AudioPlayer().play(assetSource);
       }
     } catch (e) {
       print("Error deleting user: $e");
@@ -49,7 +52,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
-
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -60,6 +63,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
             TextButton(
               child: const Text('Nie'),
               onPressed: () {
+                AudioPlayer().play(assetSource);
                 Navigator.of(context).pop();
               },
             ),
@@ -149,6 +153,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -302,6 +307,7 @@ class _UserDetailPageState extends State<UserDetailPage> {
                   const SizedBox(height: 30), // Zwiększony odstęp
                   ElevatedButton(
                     onPressed: () async {
+                      AudioPlayer().play(assetSource);
                       await _showDeleteConfirmationDialog(context);
                       if(deleted) Navigator.pop(context, true);
                     },

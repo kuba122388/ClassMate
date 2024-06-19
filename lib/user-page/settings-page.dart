@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -82,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ],
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             'USTAWIENIA',
             textAlign: TextAlign.center,
@@ -100,7 +101,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   BottomAppBar BuildBackButton(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
     return BottomAppBar(
       color: Colors.transparent,
       padding: EdgeInsets.zero,
@@ -138,161 +138,179 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: BuildTopNav(context),
       body: _userData != null
           ? Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 60),
-            Container(
-              width: screenWidth * 0.9,
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: const Color(0xFF313E50),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10.0,
-                    offset: Offset(0, 10),
-                  ),
-                ],
-              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text.rich(
-                    TextSpan(
+                  const SizedBox(height: 60),
+                  Container(
+                    width: screenWidth * 0.9,
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF313E50),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10.0,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const TextSpan(
-                          text: 'Email: ',
-                          style: TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Email: ',
+                                style: TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _userData!['email'],
+                                style: const TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        TextSpan(
-                          text: _userData!['email'],
-                          style: const TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontSize: 18,
+                        const SizedBox(height: 10),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Imię: ',
+                                style: TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _userData!['firstName'],
+                                style: const TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Nazwisko: ',
+                                style: TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _userData!['lastName'],
+                                style: const TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Data urodzenia: ',
+                                style: TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _formatDate(_userData!['dateOfBirth']),
+                                style: const TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Uczelnia: ',
+                                style: TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _userData!['university'],
+                                style: const TextStyle(
+                                  color: Color(0xFFF6FFF8),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Imię: ',
-                          style: TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextSpan(
-                          text: _userData!['firstName'],
-                          style: const TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Nazwisko: ',
-                          style: TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextSpan(
-                          text: _userData!['lastName'],
-                          style: const TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Data urodzenia: ',
-                          style: TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextSpan(
-                          text: _formatDate(_userData!['dateOfBirth']),
-                          style: const TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Uczelnia: ',
-                          style: TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextSpan(
-                          text: _userData!['university'],
-                          style: const TextStyle(
-                            color: Color(0xFFF6FFF8),
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 30), // Zwiększony odstęp
+                  SizedBox(height: screenHeight * 0.05),
+                  BuildNavButton('Wyloguj', context, _logout),
                 ],
               ),
-            ),
-            const SizedBox(height: 30), // Zwiększony odstęp
-            SizedBox(height: screenHeight * 0.05),
-            BuildNavButton('Wyloguj', context, _logout),
-          ],
-        ),
-      )
+            )
           : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: BuildBackButton(context),
     );
   }
 
-  Widget BuildNavButton(String text, BuildContext context, Function(BuildContext) onPressed) {
+  Widget BuildNavButton(
+      String text, BuildContext context, Function(BuildContext) onPressed) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final AssetSource assetSource = AssetSource('../sounds/approved.mp3');
 
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
+        await Future.delayed(const Duration(milliseconds: 150));
+        AudioPlayer().play(assetSource);
+        await Future.delayed(const Duration(milliseconds: 300));
         onPressed(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text("Pomyślnie wylogowano!",
+                textAlign: TextAlign.center),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+                bottom: screenHeight * 0.05,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05),
+            duration: const Duration(milliseconds: 2500)));
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
-        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+        // Ustawienie przezroczystego tła przycisku
+        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero),
+        // Ustawienie paddingu przycisku na zero
+        tapTargetSize: MaterialTapTargetSize
+            .shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
       ),
       child: Container(
         alignment: Alignment.center,

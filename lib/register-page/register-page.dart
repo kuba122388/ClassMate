@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:classmate/register-page/register-approved.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return Scaffold(
         backgroundColor: COLOR_BACKGROUND,
@@ -108,13 +110,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   InputWithTitle(context, 'Imię', _imieController),
                   InputWithTitle(context, 'Nazwisko', _nazwiskoController),
                   InputWithTitle(context, 'E-mail', _emailController),
-                  InputWithTitle(context, 'Data urodzenia', _dataUrodzeniaController),
+                  InputWithTitle(
+                      context, 'Data urodzenia', _dataUrodzeniaController),
                   DropDownList(context, 'Uczelnia', _uczelniaController),
                   InputWithTitle(context, 'Hasło', _hasloController),
                   Container(
                     margin: const EdgeInsets.only(top: 30, bottom: 40),
                     child: ElevatedButton(
                       onPressed: () async {
+                        AudioPlayer().play(assetSource);
                         if (_formKey.currentState!.validate()) {
                           try {
                             ScaffoldMessenger.of(context)
@@ -123,12 +127,17 @@ class _RegisterPageState extends State<RegisterPage> {
                               duration: Duration(seconds: 1),
                             ));
 
-                            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                            await FirebaseAuth.instance
+                                .createUserWithEmailAndPassword(
                                     email: _emailController.text,
                                     password: _hasloController.text);
 
-                            List<String> dateParts = _dataUrodzeniaController.text.split('-');
-                            DateTime dateOfBirth = DateTime(int.parse(dateParts[2]), int.parse(dateParts[1]), int.parse(dateParts[0]));
+                            List<String> dateParts =
+                                _dataUrodzeniaController.text.split('-');
+                            DateTime dateOfBirth = DateTime(
+                                int.parse(dateParts[2]),
+                                int.parse(dateParts[1]),
+                                int.parse(dateParts[0]));
 
                             DatabaseUser User = DatabaseUser(
                                 firstName: _imieController.text,
@@ -141,6 +150,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
                             await Future.delayed(
                                 const Duration(milliseconds: 1200));
+
+                            assetSource = AssetSource('../sounds/approved.mp3');
+                            AudioPlayer().play(assetSource);
 
                             Navigator.push(
                               context,
@@ -160,7 +172,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   .showSnackBar(const SnackBar(
                                 content: Text("Ten adres E-mail już istnieje"),
                               ));
-                            } else {
+                            } else if (e.code == 'invalid-email'){
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                  content: Text("Nieprawidłowy adres e-mail")));
+                            }
+                            else {
                               print('UNKNOWN ERROR: ${e.code}');
                             }
                           }
@@ -319,7 +336,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             decoration: const InputDecoration(
                 border: UnderlineInputBorder(borderSide: BorderSide.none),
-                hintStyle: TextStyle(fontFamily: 'Asap', fontStyle: FontStyle.italic),
+                hintStyle:
+                    TextStyle(fontFamily: 'Asap', fontStyle: FontStyle.italic),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.transparent))),
             style: const TextStyle(

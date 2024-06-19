@@ -1,3 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
+
 import 'user-detail-page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -53,14 +55,16 @@ class _UsersPageState extends State<UsersPage> {
 
   Widget _buildBody(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return Center(
       child: ListView.builder(
-        padding: EdgeInsets.only(top: 50.0),
+        padding: const EdgeInsets.only(top: 50.0),
         itemCount: userEmails.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () async {
+              AudioPlayer().play(assetSource);
               final isDeleted = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -72,6 +76,10 @@ class _UsersPageState extends State<UsersPage> {
 
             if(isDeleted) {
               setState(() {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Pomyślnie usunięto użytkownika!", textAlign: TextAlign.center),
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 2)));
                   _updateUserList();
                 });
             }
@@ -83,14 +91,14 @@ class _UsersPageState extends State<UsersPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
-                margin: EdgeInsets.symmetric(vertical: 10.0),
+                margin: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Container(
                   width: screenWidth * 0.8,
-                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
                   child: Center(
                     child: Text(
                       userEmails[index],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18.0,
                         color: Color(0xFF313E50),
                       ),
@@ -121,7 +129,7 @@ class _UsersPageState extends State<UsersPage> {
             ),
           ],
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             'UZYTKOWNICY',
             textAlign: TextAlign.center,

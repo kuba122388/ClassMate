@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -51,6 +52,8 @@ class _SchedulePageState extends State<SchedulePage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: COLOR_BACKGROUND,
@@ -77,6 +80,7 @@ class _SchedulePageState extends State<SchedulePage> {
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
+                AudioPlayer().play(assetSource);
                 _showAddEventDialog(context);
               },
               backgroundColor: COLOR_BACKGROUND_DARKER,
@@ -90,6 +94,7 @@ class _SchedulePageState extends State<SchedulePage> {
               onPressed: () {
                 if (!isSameDate(_selectedDay, DateTime.now())) {
                   setState(() {
+                    AudioPlayer().play(assetSource);
                     _selectedDay = DateTime.now();
                   });
                 }
@@ -179,6 +184,7 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   Widget _buildEventList() {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return Expanded(
       child: StreamBuilder<QuerySnapshot>(
         stream: _eventsCollection.snapshots(),
@@ -230,6 +236,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed: () {
+                        AudioPlayer().play(assetSource);
                         _showDeleteConfirmationDialog(eventDoc.id);
                       },
                     ),
@@ -244,6 +251,7 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   Future<void> _showDeleteConfirmationDialog(String eventId) async {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -264,6 +272,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
+                AudioPlayer().play(assetSource);
                 Navigator.of(context).pop();
               },
             ),
@@ -273,6 +282,8 @@ class _SchedulePageState extends State<SchedulePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
+                assetSource = AssetSource('../sounds/click.mp3');
+                AudioPlayer().play(assetSource);
                 _deleteEvent(eventId);
                 Navigator.of(context).pop();
               },
@@ -353,6 +364,7 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   Future<void> _showAddEventDialog(BuildContext context) async {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -401,6 +413,7 @@ class _SchedulePageState extends State<SchedulePage> {
             actions: [
               TextButton(
                 onPressed: () {
+                  AudioPlayer().play(assetSource);
                   Navigator.of(context).pop();
                   _titleController.clear();
                 },
@@ -411,7 +424,15 @@ class _SchedulePageState extends State<SchedulePage> {
               ),
               TextButton(
                 onPressed: () {
+                  assetSource = AssetSource('../sounds/approved.mp3');
                   addEvent(_titleController.text, _selectedDay);
+                  AudioPlayer().play(assetSource);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    content: Text("Dodano zadanie!", textAlign: TextAlign.center),
+                    duration: Duration(milliseconds: 2000),
+
+                  ));
                   _titleController.clear();
                   Navigator.of(context).pop();
                 },

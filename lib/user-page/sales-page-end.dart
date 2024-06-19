@@ -70,7 +70,8 @@ class _SalesPageEndState extends State<SalesPageEnd> {
           children: [
             SizedBox(
               child: Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.04 , bottom: screenHeight * 0.02),
+                padding: EdgeInsets.only(
+                    top: screenHeight * 0.04, bottom: screenHeight * 0.02),
                 child: Text(
                   widget.description,
                   style: const TextStyle(
@@ -125,38 +126,38 @@ class _SalesPageEndState extends State<SalesPageEnd> {
                               onPressed: _changeText,
                               style: ButtonStyle(
                                 backgroundColor:
-                                MaterialStateProperty.all<Color>(
+                                    MaterialStateProperty.all<Color>(
                                   Colors.transparent,
                                 ),
                                 padding: MaterialStateProperty.all<
                                     EdgeInsetsGeometry>(
                                   EdgeInsets.zero,
                                 ),
-                                tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  maxWidth: screenWidth * 0.7,
-                                ),
-                                width: screenWidth * 0.4,
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: COLOR_BACKGROUND_DARKER,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Text(
-                                  text,
-                                  style: const TextStyle(
-                                    fontFamily: 'Asap',
-                                    fontSize: 20,
-                                    letterSpacing: 0.5,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                              child: IntrinsicWidth(
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                      minWidth: screenWidth * 0.4,
+                                      maxWidth: screenWidth * 0.7),
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: COLOR_BACKGROUND_DARKER,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Text(
+                                    text,
+                                    style: const TextStyle(
+                                      fontFamily: 'Asap',
+                                      fontSize: 20,
+                                      letterSpacing: 0.5,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),

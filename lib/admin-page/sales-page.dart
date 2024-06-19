@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:classmate/admin-page/sales-add.dart';
 import 'package:classmate/user-page/sales-page-end.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,6 +31,8 @@ class _SalesPageState extends State<SalesPage> {
 
   @override
   Widget build(BuildContext context) {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: COLOR_BACKGROUND,
@@ -43,11 +46,14 @@ class _SalesPageState extends State<SalesPage> {
                     future: fetchSales(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        return const Center(
+                            child:
+                                CircularProgressIndicator(color: Colors.white));
                       } else if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(child: Text('No announcements found'));
+                        return const Center(
+                            child: Text('No announcements found'));
                       } else {
                         return ListView.builder(
                           itemCount: snapshot.data!.length,
@@ -55,7 +61,8 @@ class _SalesPageState extends State<SalesPage> {
                             var sales = snapshot.data![index];
 
                             return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                 color: Colors.transparent,
@@ -68,32 +75,51 @@ class _SalesPageState extends State<SalesPage> {
                                   FutureBuilder<String>(
                                     future: _getImageUrl(sales['image']),
                                     builder: (context, imageSnapshot) {
-                                      if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                                        return const Center(child: CircularProgressIndicator(color: Colors.white));
+                                      if (imageSnapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator(
+                                                color: Colors.white));
                                       } else if (imageSnapshot.hasError) {
-                                        return const Center(child: Icon(Icons.error));
-                                      } else if (imageSnapshot.hasData && imageSnapshot.data != null) {
+                                        return const Center(
+                                            child: Icon(Icons.error));
+                                      } else if (imageSnapshot.hasData &&
+                                          imageSnapshot.data != null) {
                                         String img = imageSnapshot.data!;
                                         String id = sales['ID'];
                                         String code = sales['code'];
                                         String txt = sales['text'];
-                                        String description = sales['description'];
+                                        String description =
+                                            sales['description'];
 
                                         return deleteOption
                                             ? Stack(
                                                 children: [
                                                   ShaderMask(
-                                                    shaderCallback: (bounds) => deleteOption
-                                                        ? LinearGradient(
-                                                            colors: [
-                                                              COLOR_BACKGROUND_DARKER.withOpacity(0.4),
-                                                              COLOR_BACKGROUND_DARKER.withOpacity(0.4)
-                                                            ],
-                                                          ).createShader(bounds)
-                                                        : const LinearGradient(
-                                                            colors: [Colors.transparent, Colors.transparent],
-                                                          ).createShader(bounds),
-                                                    blendMode: BlendMode.srcATop,
+                                                    shaderCallback: (bounds) =>
+                                                        deleteOption
+                                                            ? LinearGradient(
+                                                                colors: [
+                                                                  COLOR_BACKGROUND_DARKER
+                                                                      .withOpacity(
+                                                                          0.4),
+                                                                  COLOR_BACKGROUND_DARKER
+                                                                      .withOpacity(
+                                                                          0.4)
+                                                                ],
+                                                              ).createShader(
+                                                                bounds)
+                                                            : const LinearGradient(
+                                                                colors: [
+                                                                  Colors
+                                                                      .transparent,
+                                                                  Colors
+                                                                      .transparent
+                                                                ],
+                                                              ).createShader(
+                                                                bounds),
+                                                    blendMode:
+                                                        BlendMode.srcATop,
                                                     child: Image.network(img),
                                                   ),
                                                   Visibility(
@@ -103,44 +129,75 @@ class _SalesPageState extends State<SalesPage> {
                                                         child: ElevatedButton(
                                                           onPressed: () async {
                                                             try {
-                                                              await FirebaseFirestore.instance
-                                                                  .collection('sales')
+                                                              await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'sales')
                                                                   .doc(id)
                                                                   .delete();
 
                                                               setState(() {
-                                                                ScaffoldMessenger.of(context)
-                                                                    .showSnackBar(const SnackBar(
-                                                                  duration: Duration(milliseconds: 1500),
-                                                                  behavior: SnackBarBehavior.floating,
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                        const SnackBar(
+                                                                  duration: Duration(
+                                                                      milliseconds:
+                                                                          1500),
+                                                                  behavior:
+                                                                      SnackBarBehavior
+                                                                          .floating,
                                                                   content: Text(
                                                                       "Ogłoszenie zostało pomyślnie usunięte!",
-                                                                      textAlign: TextAlign.center),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center),
                                                                 ));
                                                               });
                                                             } catch (e) {
                                                               setState(() {});
-                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                                                duration: Duration(milliseconds: 1500),
-                                                                behavior: SnackBarBehavior.floating,
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      const SnackBar(
+                                                                duration: Duration(
+                                                                    milliseconds:
+                                                                        1500),
+                                                                behavior:
+                                                                    SnackBarBehavior
+                                                                        .floating,
                                                                 content: Text(
                                                                     "Wystąpił problem z usunięciem ogłoszenia",
-                                                                    textAlign: TextAlign.center),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center),
                                                               ));
                                                             }
                                                           },
-                                                          style: ElevatedButton.styleFrom(
-                                                            padding: const EdgeInsets.symmetric(
-                                                                horizontal: 20, vertical: 10),
-                                                            backgroundColor: COLOR_BACKGROUND_DARKER,
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        20,
+                                                                    vertical:
+                                                                        10),
+                                                            backgroundColor:
+                                                                COLOR_BACKGROUND_DARKER,
                                                           ),
                                                           child: const Text(
                                                             'USUN',
                                                             style: TextStyle(
                                                               fontSize: 24,
-                                                              fontFamily: 'Asap',
-                                                              fontWeight: FontWeight.bold,
-                                                              color: Colors.white,
+                                                              fontFamily:
+                                                                  'Asap',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
                                                             ),
                                                           ),
                                                         ),
@@ -154,14 +211,20 @@ class _SalesPageState extends State<SalesPage> {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder: (context) => SalesPageEnd(
-                                                            imag: img, code: code, txt: txt, description: description)),
+                                                        builder: (context) =>
+                                                            SalesPageEnd(
+                                                                imag: img,
+                                                                code: code,
+                                                                txt: txt,
+                                                                description:
+                                                                    description)),
                                                   );
                                                 },
                                                 child: Image.network(img),
                                               );
                                       } else {
-                                        return const Center(child: Text('Brak danych'));
+                                        return const Center(
+                                            child: Text('Brak danych'));
                                       }
                                     },
                                   ),
@@ -200,18 +263,13 @@ class _SalesPageState extends State<SalesPage> {
                       ),
                       child: ElevatedButton(
                         onPressed: () async {
-                          await _navigateToAddSales(context);
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            duration: Duration(milliseconds: 1500),
-                            behavior: SnackBarBehavior.floating,
-                            content: Text(
-                                "Ogłoszenie zostało pomyślnie dodane!",
-                                textAlign: TextAlign.center),
-                          ));
+                          AudioPlayer().play(assetSource).then((_) async {
+                            await _navigateToAddSales(context);
+                          });
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 10),
                           backgroundColor: COLOR_BACKGROUND_DARKER,
                         ),
                         child: const Text(
@@ -252,11 +310,13 @@ class _SalesPageState extends State<SalesPage> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
+                            AudioPlayer().play(assetSource);
                             deleteOption = !deleteOption;
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 10),
                           backgroundColor: COLOR_BACKGROUND_DARKER,
                         ),
                         child: const Text(
@@ -344,7 +404,8 @@ class _SalesPageState extends State<SalesPage> {
       padding: EdgeInsets.zero,
       child: Container(
         decoration: const BoxDecoration(
-            color: COLOR_BACKGROUND_DARKER, borderRadius: BorderRadius.vertical(top: BORDER_RADIUS)),
+            color: COLOR_BACKGROUND_DARKER,
+            borderRadius: BorderRadius.vertical(top: BORDER_RADIUS)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -358,7 +419,8 @@ class _SalesPageState extends State<SalesPage> {
                   deleteOption = !deleteOption;
                 });
               },
-              icon: Image.asset('././images/back_icon.png', height: screenHeight * 0.06),
+              icon: Image.asset('././images/back_icon.png',
+                  height: screenHeight * 0.06),
             )
           ],
         ),

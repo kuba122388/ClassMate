@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:classmate/consts/consts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ class TaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -45,7 +47,7 @@ class TaskList extends StatelessWidget {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator(color: Colors.white));
               } else if (snapshot.hasError) {
                 return Center(child: Text('Wystąpił błąd: ${snapshot.error}'));
               }
@@ -78,12 +80,17 @@ class TaskList extends StatelessWidget {
                               : Colors.white,
                         ),
                         onPressed: () async {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(userEmail)
-                              .collection('tasks')
-                              .doc(tasks[index].id)
-                              .update({'isDone': !taskData['isDone']});
+                          try {
+                            AudioPlayer().play(assetSource);
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(userEmail)
+                                .collection('tasks')
+                                .doc(tasks[index].id)
+                                .update({'isDone': !taskData['isDone']});
+                          } catch(e){
+                            print('Error occured: {$e}');
+                          }
                         },
                       ),
                       Expanded(
@@ -103,14 +110,19 @@ class TaskList extends StatelessWidget {
                           visible: taskData['isDone'] ? true : false,
                           child: GestureDetector(
                               onTap: () async {
-                                taskData['isDone']
-                                    ? await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(userEmail)
-                                        .collection('tasks')
-                                        .doc(tasks[index].id)
-                                        .delete()
-                                    : null;
+                                try {
+                                  AudioPlayer().play(assetSource);
+                                  taskData['isDone']
+                                      ? await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(userEmail)
+                                      .collection('tasks')
+                                      .doc(tasks[index].id)
+                                      .delete()
+                                      : null;
+                                } catch(e){
+                                  print('Error occured: {$e}');
+                                }
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(5),

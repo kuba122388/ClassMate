@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -40,11 +41,13 @@ class _SalesAddState extends State<SalesAdd> {
   }
 
   Future<void> _uploadImage() async {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Proszę wrzucić obraz promocji", textAlign: TextAlign.center),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2)));
+      AudioPlayer().play(assetSource);
       return;
     }
 
@@ -57,7 +60,14 @@ class _SalesAddState extends State<SalesAdd> {
     Sale sale = Sale(code.text, description.text, fileName, text.text);
     sale.saveSale();
 
+    assetSource = AssetSource('../sounds/approved.mp3');
+    AudioPlayer().play(assetSource);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Promocja została pomyślnie dodana!", textAlign: TextAlign.center),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2)));
     print('Image URL: $url');
+
     Navigator.pop(context, true);
   }
 
@@ -133,6 +143,10 @@ class _SalesAddState extends State<SalesAdd> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   await _uploadImage();
+                }
+                else{
+                  AssetSource assetSource = AssetSource('../sounds/click.mp3');
+                  AudioPlayer().play(assetSource);
                 }
               },
               style: ElevatedButton.styleFrom(

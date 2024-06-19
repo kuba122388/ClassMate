@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -47,11 +48,15 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
   }
 
   Future<void> _uploadImage() async {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
+
     if(_image == null && _selectedDate == null){
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Proszę podać datę i wybrać obraz promocji", textAlign: TextAlign.center),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2)));
+
+      AudioPlayer().play(assetSource);
       return;
     }
 
@@ -60,6 +65,8 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
           content: Text("Proszę wybrać obraz promocji", textAlign: TextAlign.center),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2)));
+
+      AudioPlayer().play(assetSource);
       return;
     }
 
@@ -68,6 +75,8 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
           content: Text("Proszę wybrać datę wydarzenia", textAlign: TextAlign.center),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2)));
+
+      AudioPlayer().play(assetSource);
       return;
     }
 
@@ -79,6 +88,13 @@ class _AnnouncementAddState extends State<AnnouncementAdd> {
 
     Announcement announcement = Announcement(_selectedDate!, fileName);
     announcement.saveAnnouncement();
+
+    assetSource = AssetSource('../sounds/approved.mp3');
+    AudioPlayer().play(assetSource);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Ogłoszenie zostało pomyślnie dodane!", textAlign: TextAlign.center),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2)));
 
     print('Image URL: $url');
     Navigator.pop(context, true);

@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
 import '../login-page/login-page.dart';
@@ -52,7 +53,8 @@ class _RegisterApprovedState extends State<RegisterApproved> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(top: screenHeight * 0.05, bottom: screenHeight * 0.02),
+                padding: EdgeInsets.only(
+                    top: screenHeight * 0.05, bottom: screenHeight * 0.02),
                 child: Image.asset('././images/approved_icon.png',
                     width: screenWidth * 0.4),
               ),
@@ -78,6 +80,7 @@ class _RegisterApprovedState extends State<RegisterApproved> {
 
   BottomAppBar BuildBackButton(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return BottomAppBar(
       color: Colors.transparent,
@@ -91,7 +94,10 @@ class _RegisterApprovedState extends State<RegisterApproved> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/home', (route) => false);
+                });
               },
               icon: Image.asset('././images/back_icon.png',
                   height: screenHeight * 0.06),
@@ -113,9 +119,13 @@ class _RegisterApprovedState extends State<RegisterApproved> {
           );
         },
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku
-          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero), // Ustawienie paddingu przycisku na zero
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+          // Ustawienie przezroczystego tła przycisku
+          padding:
+              MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero),
+          // Ustawienie paddingu przycisku na zero
+          tapTargetSize: MaterialTapTargetSize
+              .shrinkWrap, // Zwinięcie przycisku, aby dopasować się do jego zawartości
         ),
         child: Container(
           alignment: Alignment.center,
@@ -135,7 +145,6 @@ class _RegisterApprovedState extends State<RegisterApproved> {
               fontWeight: FontWeight.bold,
             ),
           ),
-        )
-    );
+        ));
   }
 }

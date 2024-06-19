@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:classmate/user-page/sales-page-end.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -26,6 +27,7 @@ class _SalesPageState extends State<SalesPage> {
 
   @override
   Widget build(BuildContext context) {
+    AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: COLOR_BACKGROUND,
@@ -34,7 +36,8 @@ class _SalesPageState extends State<SalesPage> {
           future: fetchSales(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Colors.white));
+              return const Center(
+                  child: CircularProgressIndicator(color: Colors.white));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -60,21 +63,33 @@ class _SalesPageState extends State<SalesPage> {
                         FutureBuilder<String>(
                           future: _getImageUrl(sales['image']),
                           builder: (context, imageSnapshot) {
-                            if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator(color: Colors.white,));
+                            if (imageSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ));
                             } else if (imageSnapshot.hasError) {
                               return const Center(child: Icon(Icons.error));
-                            } else if (imageSnapshot.hasData && imageSnapshot.data != null) {
+                            } else if (imageSnapshot.hasData &&
+                                imageSnapshot.data != null) {
                               String img = imageSnapshot.data!;
                               String code = sales['code'];
                               String txt = sales['text'];
                               String description = sales['description'];
                               return GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => SalesPageEnd(imag: img, code: code, txt: txt, description: description)),
-                                  );
+                                  AudioPlayer().play(assetSource).then((_) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SalesPageEnd(
+                                              imag: img,
+                                              code: code,
+                                              txt: txt,
+                                              description: description)),
+                                    );
+                                  });
                                 },
                                 child: Image.network(img),
                               );

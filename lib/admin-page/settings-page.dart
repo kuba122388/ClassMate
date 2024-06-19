@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
@@ -10,11 +11,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
-  void _navigateToSettings(BuildContext context) {
-    // Nawigacja do reszty ustawień
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => RestOfSettingsPage()));
-  }
 
   void _logout(BuildContext context) {
     FirebaseAuth.instance.signOut();
@@ -65,7 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
             )
           ],
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             'USTAWIENIA',
             textAlign: TextAlign.center,
@@ -110,10 +106,24 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget BuildNavButton(String text, BuildContext context, Function(BuildContext) onPressed) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final AssetSource assetSource = AssetSource('../sounds/approved.mp3');
 
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
+        await Future.delayed(const Duration(milliseconds: 150));
+        AudioPlayer().play(assetSource);
+        await Future.delayed(const Duration(milliseconds: 300));
         onPressed(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text("Pomyślnie wylogowano!",
+                textAlign: TextAlign.center),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.only(
+                bottom: screenHeight * 0.05,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05),
+            duration: const Duration(milliseconds: 2500)));
       },
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Ustawienie przezroczystego tła przycisku

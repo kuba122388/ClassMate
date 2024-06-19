@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
 import '../database-features/DatabaseFeatures.dart';
@@ -8,6 +9,7 @@ import 'users-page.dart';
 
 class MainAdminPage extends StatefulWidget {
   final String email;
+
   const MainAdminPage({super.key, required this.email});
 
   @override
@@ -29,7 +31,8 @@ class _MainAdminPageState extends State<MainAdminPage> {
       retrievedUser = user;
     });
     if (retrievedUser != null) {
-         print('Pobrano dane użytkownika: ${retrievedUser?.firstName} ${retrievedUser?.lastName}');
+      print(
+          'Pobrano dane użytkownika: ${retrievedUser?.firstName} ${retrievedUser?.lastName}');
     }
   }
 
@@ -44,7 +47,6 @@ class _MainAdminPageState extends State<MainAdminPage> {
   }
 
   Center BuildBody(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Center(
@@ -55,20 +57,18 @@ class _MainAdminPageState extends State<MainAdminPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: screenWidth*0.8,
+                width: screenWidth * 0.8,
                 child: Image.asset('././images/logo.png'),
               ),
             ],
           ),
-
         ],
       ),
     );
   }
 
-
-
   PreferredSizeWidget BuildTopNav(BuildContext context) {
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
@@ -89,63 +89,60 @@ class _MainAdminPageState extends State<MainAdminPage> {
         child: Row(
           children: [
             Container(
-              width: MediaQuery.of(context).size.width/2,
+              width: MediaQuery.of(context).size.width / 2,
               // padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: const Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 8.0),
-                  child: Text(
-                      '16.05.2024',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      )
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text('16.05.2024',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Text('Czwartek',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ],
               ),
-              Expanded(
-                child: Text(
-                    'Czwartek',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    )
-                ),
-              ),
-            ],
-        ),
               // alignment: Alignment.centerLeft,
-
             ),
             Container(
-              width: MediaQuery.of(context).size.width/2,
-              padding: const EdgeInsets.only(top: 3, bottom: 3, right:40),
+              width: MediaQuery.of(context).size.width / 2,
+              padding: const EdgeInsets.only(top: 3, bottom: 3, right: 40),
               alignment: Alignment.centerRight,
               child: IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
+                  AudioPlayer().play(assetSource).then((_) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsPage()),
+                    );
+                  });
                 },
                 icon: Image.asset('././images/settings.png'),
-            ),
+              ),
             ),
           ],
         ),
       ),
-
     );
   }
 
   BottomAppBar BuildBackButton(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return BottomAppBar(
       color: Colors.transparent,
@@ -159,27 +156,32 @@ class _MainAdminPageState extends State<MainAdminPage> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => UsersPage()));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => UsersPage()));
+                });
               },
               icon: Image.asset('././images/user.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AnnouncementsPage()));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AnnouncementsPage()));
+                });
               },
               icon: Image.asset('././images/announcements.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SalesPage()));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SalesPage()));
+                });
               },
               icon: Image.asset('././images/sale.png',
                   height: screenHeight * 0.06),

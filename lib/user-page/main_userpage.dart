@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../consts/consts.dart';
@@ -51,6 +52,7 @@ class _MainUserPageState extends State<MainUserPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final taskController = TextEditingController();
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return Center(
       child: Column(
@@ -79,7 +81,9 @@ class _MainUserPageState extends State<MainUserPage> {
               ),
               IconButton(
                 onPressed: () {
-                  _showAddTaskDialog(taskController);
+                  AudioPlayer().play(assetSource).then((_) {
+                    _showAddTaskDialog(taskController);
+                  });
                 },
                 icon: Image.asset(
                   '././images/plus.png',
@@ -105,6 +109,8 @@ class _MainUserPageState extends State<MainUserPage> {
   }
 
   PreferredSizeWidget BuildTopNav(BuildContext context) {
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
+
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
@@ -157,10 +163,14 @@ class _MainUserPageState extends State<MainUserPage> {
               alignment: Alignment.centerRight,
               child: IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SettingsPage(email: widget.email)),
-                  );
+                  AudioPlayer().play(assetSource).then((_) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SettingsPage(email: widget.email)),
+                    );
+                  });
                 },
                 icon: Image.asset('././images/settings.png'),
               ),
@@ -173,6 +183,7 @@ class _MainUserPageState extends State<MainUserPage> {
 
   BottomAppBar BuildBackButton(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final AssetSource assetSource = AssetSource('../sounds/click.mp3');
 
     return BottomAppBar(
       color: Colors.transparent,
@@ -186,26 +197,36 @@ class _MainUserPageState extends State<MainUserPage> {
           children: [
             IconButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SchedulePage(email: widget.email,)));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SchedulePage(
+                                email: widget.email,
+                              )));
+                });
               },
               icon: Image.asset('././images/calendar.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AnnouncementsPage()));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AnnouncementsPage()));
+                });
               },
               icon: Image.asset('././images/announcements.png',
                   height: screenHeight * 0.06),
             ),
             IconButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SalesPage()));
+                AudioPlayer().play(assetSource).then((_) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const SalesPage()));
+                });
               },
               icon: Image.asset('././images/sale.png',
                   height: screenHeight * 0.06),
@@ -217,6 +238,7 @@ class _MainUserPageState extends State<MainUserPage> {
   }
 
   void _showAddTaskDialog(taskController) {
+    AssetSource assetSource = AssetSource('../sounds/approved.mp3');
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -267,30 +289,39 @@ class _MainUserPageState extends State<MainUserPage> {
                   ),
                   onPressed: () async {
                     if (taskController.text.isNotEmpty) {
-                      Task newTask = Task(task: taskController.text, timestamp: Timestamp.now());
-                      try{
+                      Task newTask = Task(
+                          task: taskController.text,
+                          timestamp: Timestamp.now());
+                      try {
                         await newTask.saveTask(widget.email);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Dodano nowe zadanie do listy!", textAlign: TextAlign.center),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(milliseconds: 2500)));
-                      }
-                      catch(e){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Dodano nowe zadanie do listy!",
+                                    textAlign: TextAlign.center),
+                                behavior: SnackBarBehavior.floating,
+                                duration: Duration(milliseconds: 2500)));
+                        AudioPlayer().play(assetSource);
+                      } catch (e) {
                         print(e);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Wystąpił błąd", textAlign: TextAlign.center),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(milliseconds: 2500)));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Wystąpił błąd",
+                                    textAlign: TextAlign.center),
+                                behavior: SnackBarBehavior.floating,
+                                duration: Duration(milliseconds: 2500)));
                       }
                       Navigator.pop(context);
                       taskController.clear();
-                    }
-                    else{
+                    } else {
+                      assetSource = AssetSource('../sounds/click.mp3');
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Nie wprowadzono żadnej treści", textAlign: TextAlign.center),
+                          content: Text("Nie wprowadzono żadnej treści",
+                              textAlign: TextAlign.center),
                           behavior: SnackBarBehavior.floating,
                           duration: Duration(milliseconds: 2500)));
-                      Navigator.pop(context);
+                      AudioPlayer().play(assetSource).then((_) {
+                        Navigator.pop(context);
+                      });
                     }
                   },
                   child: const Text('Zapisz'),
