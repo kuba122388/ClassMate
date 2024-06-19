@@ -21,7 +21,6 @@ class _SalesPageState extends State<SalesPage> {
     for (var doc in snapshot.docs) {
       sales.add(doc.data());
     }
-    await Future.delayed(const Duration(seconds: 2));
     return sales;
   }
 

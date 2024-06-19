@@ -194,6 +194,9 @@ class _SchedulePageState extends State<SchedulePage> {
           if (snapshot.hasError) {
             return Text('Wystąpił błąd: ${snapshot.error}');
           }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          }
           List<DocumentSnapshot> eventsForSelectedDay =
               snapshot.data!.docs.where((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
