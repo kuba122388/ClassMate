@@ -111,12 +111,11 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     if (imageUrl != null) {
       final ref = FirebaseStorage.instance.ref().child('announcements').child(imageUrl);
       var url = await ref.getDownloadURL() as String;
-      await Future.delayed(const Duration(seconds: 2));
       print('TTUAJ JEST LINK!: $url');
       return url;
     } else {
       print('Nie działa');
-      return ''; // Zwracamy pusty ciąg, jeśli nie ma linku obrazu
+      return '';
     }
   }
 

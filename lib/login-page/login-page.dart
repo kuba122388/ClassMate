@@ -227,6 +227,8 @@ class _LoginPageState extends State<LoginPage> {
             controller: controller,
             obscureText: title == 'Hasło',
             decoration: InputDecoration(
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.transparent)),
                 hintText: title,
                 hintStyle: const TextStyle(
                     fontFamily: 'Asap', fontStyle: FontStyle.italic),

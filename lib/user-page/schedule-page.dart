@@ -79,6 +79,7 @@ class _SchedulePageState extends State<SchedulePage> {
             bottom: 16,
             right: 16,
             child: FloatingActionButton(
+              heroTag: null,
               onPressed: () {
                 AudioPlayer().play(assetSource);
                 _showAddEventDialog(context);
@@ -91,6 +92,7 @@ class _SchedulePageState extends State<SchedulePage> {
             bottom: 16,
             left: 16,
             child: FloatingActionButton(
+              heroTag: null,
               onPressed: () {
                 if (!isSameDate(_selectedDay, DateTime.now())) {
                   setState(() {
