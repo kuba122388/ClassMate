@@ -38,6 +38,17 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
     try {
       QuerySnapshot snapshot = await _firestore.collection('users').where('email', isEqualTo: widget.email).get();
+      QuerySnapshot snapshotme = await _firestore.collection('users').doc(widget.email).collection('tasks').get();
+
+      for (var doc in snapshotme.docs) {
+        await _firestore.collection('users').doc(widget.email).collection('tasks').doc(doc.id).delete();
+      }
+
+      snapshotme = await _firestore.collection('users').doc(widget.email).collection('events').get();
+
+      for (var doc in snapshotme.docs) {
+        await _firestore.collection('users').doc(widget.email).collection('events').doc(doc.id).delete();
+      }
 
       for (var doc in snapshot.docs) {
         await _firestore.collection('users').doc(doc.id).delete();
